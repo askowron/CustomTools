@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="CTPlugins/CTPlugins.csproj" Id="db339217-10f1-4ea2-954e-ba10e44945f3" />
+  <Project Path="CTRegistryTree/CTRegistryTree.csproj" Id="c326fe7d-3228-4e32-a2cc-a14fda332427" />
+  <Project Path="CustomTools/CustomTools.csproj" Id="cd122d67-79c5-4822-940b-17357bed1f66" />
+</Solution>
