@@ -60,9 +60,9 @@ namespace CustomTools
                 menu.Items.AddRange(plugin.GetMenuItems());
             }
             menu.Items.Add(new ToolStripSeparator());
-            menu.Items.Add("Opcje", null, (s, e) => MessageBox.Show("Kliknięto opcję 2"));
+            menu.Items.Add(Strings.TrayMenu_Options, null, (s, e) => MessageBox.Show(Strings.TrayMenu_OptionsPlaceholder));
             menu.Items.Add(new ToolStripSeparator());
-            menu.Items.Add("Zamknij", null, (s, e) => Application.Exit());
+            menu.Items.Add(Strings.TrayMenu_Exit, null, (s, e) => Application.Exit());
         }
     }
 }
