@@ -1,4 +1,4 @@
-﻿using CTPlugins;
+using CTPlugins;
 using CustomTools.Core.Extensions;
 using CustomTools.Properties;
 using System;
@@ -27,19 +27,12 @@ namespace CustomTools
             trayIcon.Visible = true;
             trayIcon.Text = "Custom Tools";
 
-            // Tworzymy dynamiczne menu
+            // Wyszukujemy pluginy raz, ale odbudowujemy zawartość menu przy każdym otwarciu,
+            // żeby zmiany zapisane przez pluginy (np. w rejestrze) były od razu widoczne.
+            List<ICTPlugin> plugins = CTPlugins.CTPlugins.FindPlugins();
             ContextMenuStrip menu = new ContextMenuStrip();
-            // Wyszukiwanie Pluginów
-            foreach (ICTPlugin plugin in CTPlugins.CTPlugins.FindPlugins())
-            {
-                //menu.Items.Add("Opcja 1", null, (s, e) => MessageBox.Show("Kliknięto opcję 1"));
-                //menu.Items.Add("Opcja 2", null, (s, e) => MessageBox.Show("Kliknięto opcję 2"));
-                menu.Items.AddRange(plugin.GetMenuItems());
-            }            
-            menu.Items.Add(new ToolStripSeparator());
-            menu.Items.Add("Opcje", null, (s, e) => MessageBox.Show("Kliknięto opcję 2"));
-            menu.Items.Add(new ToolStripSeparator());
-            menu.Items.Add("Zamknij", null, (s, e) => Application.Exit());
+            menu.Opening += (s, e) => RebuildMenu(menu, plugins);
+            RebuildMenu(menu, plugins);
 
             // Podpinamy menu do ikony
             trayIcon.ContextMenuStrip = menu;
@@ -55,6 +48,19 @@ namespace CustomTools
 
             // Uruchamiamy pętlę aplikacji bez okna
             Application.Run();
+        }
+
+        private static void RebuildMenu(ContextMenuStrip menu, List<ICTPlugin> plugins)
+        {
+            menu.Items.Clear();
+            foreach (ICTPlugin plugin in plugins)
+            {
+                menu.Items.AddRange(plugin.GetMenuItems());
+            }
+            menu.Items.Add(new ToolStripSeparator());
+            menu.Items.Add("Opcje", null, (s, e) => MessageBox.Show("Kliknięto opcję 2"));
+            menu.Items.Add(new ToolStripSeparator());
+            menu.Items.Add("Zamknij", null, (s, e) => Application.Exit());
         }
     }
 }

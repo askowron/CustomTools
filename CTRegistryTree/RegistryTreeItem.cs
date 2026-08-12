@@ -1,4 +1,4 @@
-﻿using Microsoft.Win32;
+using Microsoft.Win32;
 using System;
 using System.Windows.Forms;
 
@@ -39,6 +39,11 @@ namespace CTRegistryTree
         /// </summary>
         public string Command { get; set; }
 
+        /// <summary>
+        /// Location of the item within the tree, expressed as "/"-separated <see cref="Id"/> segments
+        /// relative to the plugin's registry root (e.g. "/parentId/childId"). Mirrors the actual registry
+        /// key nesting used to persist the item.
+        /// </summary>
         public string Path;
 
         /// <summary>
@@ -77,36 +82,51 @@ namespace CTRegistryTree
         /// </summary>
         /// <remarks>The "Action" value is interpreted as an <see cref="ActionType"/> if it matches a
         /// defined value; otherwise, <see cref="ActionType.RunCommand"/> is used. If the "Name" or "Command" values are
-        /// missing, empty strings are used.</remarks>
+        /// missing, empty strings are used. The item's <see cref="Path"/> is derived from the key's own location
+        /// under the plugin's registry root, so the returned item always reflects where it actually lives.</remarks>
         /// <param name="key">The registry key containing the values used to initialize the <see cref="RegistryTreeItem"/>. Must not be
         /// <see langword="null"/>.</param>
         public static explicit operator RegistryTreeItem(RegistryKey key)
         {
             if (key == null) return null;
+
             string text = key.GetValue("Name") as string ?? string.Empty;
             int actionValue = (int)(key.GetValue("Action") ?? 1);
             string command = key.GetValue("Command") as string ?? string.Empty;
             ActionType action = ActionType.RunCommand;
-            if (System.Enum.IsDefined(typeof(ActionType), actionValue))
+            if (Enum.IsDefined(typeof(ActionType), actionValue))
             {
                 action = (ActionType)actionValue;
             }
-            return new RegistryTreeItem(Guid.NewGuid(), text, action, command);
+
+            Guid id;
+            if (!Guid.TryParse(key.GetValue("Id") as string, out id))
+            {
+                id = Guid.NewGuid();
+            }
+
+            string itemsRoot = $@"HKEY_CURRENT_USER\{CTRegistryTree.ROOT}\{CTRegistryTree.Items}";
+            string path = "/" + key.Name.Substring(itemsRoot.Length).Replace('\\', '/').TrimStart('/');
+
+            return new RegistryTreeItem(id, text, action, command, path);
         }
 
         /// <summary>
         /// Converts the specified <see cref="RegistryTreeItem"/> to a <see cref="Microsoft.Win32.RegistryKey"/>
         /// instance representing the registry entry for the item.
         /// </summary>
-        /// <remarks>The returned registry key is created under the current user's registry hive. The
-        /// key's values for "Name", "Action", and "Command" are set based on the properties of the <see
-        /// cref="RegistryTreeItem"/>.</remarks>
+        /// <remarks>The returned registry key is created under the current user's registry hive, at the
+        /// location described by <see cref="Path"/>. The key's "Id", "Name", "Action" and "Command" values are set
+        /// based on the properties of the <see cref="RegistryTreeItem"/>.</remarks>
         /// <param name="item">The <see cref="RegistryTreeItem"/> to convert. If <paramref name="item"/> is <see langword="null"/>, the
         /// operator returns <see langword="null"/>.</param>
         public static explicit operator RegistryKey(RegistryTreeItem item)
         {
             if (item == null) return null;
-            var key = Registry.CurrentUser.CreateSubKey($"{CTRegistryTree.ROOT}\\{CTRegistryTree.Items}\\{item.Text}");
+
+            string relativePath = item.Path.Replace('/', '\\');
+            var key = Registry.CurrentUser.CreateSubKey($@"{CTRegistryTree.ROOT}\{CTRegistryTree.Items}{relativePath}");
+            key.SetValue("Id", item.Id.ToString());
             key.SetValue("Name", item.Text);
             key.SetValue("Action", (int)item.Action);
             key.SetValue("Command", item.Command);

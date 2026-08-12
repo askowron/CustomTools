@@ -95,7 +95,8 @@
             this.button1.TabIndex = 8;
             this.button1.Text = "Find";
             this.button1.UseVisualStyleBackColor = true;
-            // 
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            //
             // FrmManageItemForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
