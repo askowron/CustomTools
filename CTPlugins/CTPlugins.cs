@@ -20,7 +20,10 @@ namespace CTPlugins
             {
                 try
                 {
-                    Assembly pluginAssembly = Assembly.LoadFile(filePath);
+                    // LoadFrom (not LoadFile) is required so satellite resource assemblies
+                    // (e.g. Strings.pl.resx's compiled output) resolve relative to the plugin's
+                    // own directory — LoadFile loads into a context that skips that probing.
+                    Assembly pluginAssembly = Assembly.LoadFrom(filePath);
                     var pluginTypes = pluginAssembly.GetTypes()
                         .Where(t => t.GetCustomAttributes(typeof(CustomToolsPluginAttribute), true).Any());
 
