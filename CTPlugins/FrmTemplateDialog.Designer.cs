@@ -52,7 +52,7 @@
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
             this.btnCancel.TabIndex = 1;
-            this.btnCancel.Text = "Cancel";
+            this.btnCancel.Text = Properties.Strings.Dialog_Cancel;
             this.btnCancel.UseVisualStyleBackColor = true;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             // 
@@ -63,7 +63,7 @@
             this.btnAccept.Name = "btnAccept";
             this.btnAccept.Size = new System.Drawing.Size(75, 23);
             this.btnAccept.TabIndex = 0;
-            this.btnAccept.Text = "OK";
+            this.btnAccept.Text = Properties.Strings.Dialog_OK;
             this.btnAccept.UseVisualStyleBackColor = true;
             this.btnAccept.Click += new System.EventHandler(this.btnOK_Click);
             // 
