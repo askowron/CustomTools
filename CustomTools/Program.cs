@@ -31,6 +31,8 @@ namespace CustomTools
             // żeby zmiany zapisane przez pluginy (np. w rejestrze) były od razu widoczne.
             List<ICTPlugin> plugins = CTPlugins.CTPlugins.FindPlugins();
             ContextMenuStrip menu = new ContextMenuStrip();
+            menu.ShowImageMargin = false;
+            menu.Renderer = new GroupLabelRenderer();
             menu.Opening += (s, e) => RebuildMenu(menu, plugins);
             RebuildMenu(menu, plugins);
 

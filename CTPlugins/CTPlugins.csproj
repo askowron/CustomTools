@@ -47,6 +47,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="CustomToolsPluginAttribute.cs" />
+    <Compile Include="GroupLabelRenderer.cs" />
     <Compile Include="FrmTemplateDialog.cs">
       <SubType>Form</SubType>
     </Compile>

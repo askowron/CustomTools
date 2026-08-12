@@ -3,6 +3,7 @@ using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -14,7 +15,7 @@ namespace CTRegistryTree
         public const string ROOT = @"SOFTWARE\Appit\CustomTools";
         public const string Items = "Items";
 
-        public string Name { get; set; }
+        public string Name { get; set; } = "Registry";
 
         public CTRegistryTree()
         {
@@ -41,7 +42,6 @@ namespace CTRegistryTree
         protected ToolStripItem[] LoadItems(string root)
         {
             List<ToolStripItem> items = new List<ToolStripItem>();
-            items.Add(new CtrlToolStripLabel("Registry items"));
 
             var rootKey = Registry.CurrentUser.OpenSubKey(root);
             if (rootKey != null)
@@ -53,18 +53,29 @@ namespace CTRegistryTree
             }
 
             items.Add(new ToolStripSeparator());
-            items.Add(new ToolStripButton("Zarządzaj", null, delegate {
+            var manageItem = new ToolStripMenuItem("⚙ Zarządzaj", null, delegate {
                 using (FrmManageItemsForm form = new FrmManageItemsForm())
                 {
                     form.ShowDialog();
                 }
-            }));
+            });
+            manageItem.Font = new Font(manageItem.Font.FontFamily, manageItem.Font.Size - 1, manageItem.Font.Style);
+            manageItem.ForeColor = Color.FromArgb(100, 100, 100);
+            items.Add(manageItem);
+
+            // Zamiast osobnego wiersza z podpisem, cała sekcja tej wtyczki jest oznaczana
+            // wspólnym Tagiem, który GroupLabelRenderer rysuje jako pionową etykietę z lewej strony.
+            foreach (var item in items)
+            {
+                item.Tag = Name;
+                item.Margin = new Padding(GroupLabelRenderer.DefaultLabelWidth, item.Margin.Top, item.Margin.Right, item.Margin.Bottom);
+            }
 
             return items.ToArray();
         }
 
         /// <summary>
-        /// Recursively builds menu items from a registry key: leaf items become clickable buttons that
+        /// Recursively builds menu items from a registry key: leaf items become clickable menu items that
         /// execute their action, items with children become submenus.
         /// </summary>
         private static IEnumerable<ToolStripItem> BuildMenuItems(RegistryKey parentKey)
@@ -83,23 +94,68 @@ namespace CTRegistryTree
                     }
                     else
                     {
-                        var button = new ToolStripButton(item.Text);
-                        button.Click += (s, e) => ExecuteAction(item);
-                        yield return button;
+                        var menuItem = new ToolStripMenuItem(item.Text);
+                        menuItem.Click += (s, e) => ExecuteAction(item);
+                        yield return menuItem;
                     }
                 }
             }
         }
 
-        private static void ExecuteAction(RegistryTreeItem item)
+        internal static void ExecuteAction(RegistryTreeItem item)
         {
             try
             {
-                Process.Start(item.Command);
+                // Win+R expands %variables% before launching; Process.Start does not, so do it ourselves.
+                string command = Environment.ExpandEnvironmentVariables(item.Command ?? string.Empty);
+
+                if (item.Action == RegistryTreeItem.ActionType.RunCommand)
+                {
+                    string fileName, arguments;
+                    SplitCommand(command, out fileName, out arguments);
+                    Process.Start(new ProcessStartInfo(fileName, arguments) { UseShellExecute = true });
+                }
+                else
+                {
+                    Process.Start(command);
+                }
             }
             catch (Exception exc)
             {
                 MessageBox.Show(exc.Message, item.Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        /// <summary>
+        /// Splits a command line into the program to launch and the arguments to pass it,
+        /// so "cmd -k &quot;...&quot;" runs cmd.exe with those arguments instead of being looked up
+        /// as a single (nonexistent) file named "cmd -k &quot;...&quot;".
+        /// </summary>
+        private static void SplitCommand(string command, out string fileName, out string arguments)
+        {
+            command = (command ?? string.Empty).Trim();
+
+            if (command.StartsWith("\"", StringComparison.Ordinal))
+            {
+                int closingQuote = command.IndexOf('"', 1);
+                if (closingQuote > 0)
+                {
+                    fileName = command.Substring(1, closingQuote - 1);
+                    arguments = command.Substring(closingQuote + 1).Trim();
+                    return;
+                }
+            }
+
+            int firstSpace = command.IndexOf(' ');
+            if (firstSpace < 0)
+            {
+                fileName = command;
+                arguments = string.Empty;
+            }
+            else
+            {
+                fileName = command.Substring(0, firstSpace);
+                arguments = command.Substring(firstSpace + 1).Trim();
             }
         }
     }

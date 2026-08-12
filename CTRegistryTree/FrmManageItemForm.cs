@@ -61,5 +61,12 @@ namespace CTRegistryTree
                 }
             }
         }
+
+        private void btnTest_Click(object sender, EventArgs e)
+        {
+            var action = (RegistryTreeItem.ActionType)(cbAction.SelectedIndex + 1);
+            var testItem = new RegistryTreeItem(Guid.NewGuid(), tbText.Text, action, tbCommand.Text);
+            CTRegistryTree.ExecuteAction(testItem);
+        }
     }
 }
