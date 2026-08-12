@@ -68,6 +68,7 @@
     <ProjectReference Include="..\CTPlugins\CTPlugins.csproj">
       <Project>{db339217-10f1-4ea2-954e-ba10e44945f3}</Project>
       <Name>CTPlugins</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
