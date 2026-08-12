@@ -16,7 +16,7 @@ namespace CTRegistryTree
         private void LoadTree()
         {
             tvItems.Nodes.Clear();
-            var rootNode = new TreeNode("Root");
+            var rootNode = new TreeNode(Properties.Strings.Tree_Root);
             tvItems.Nodes.Add(rootNode);
 
             var rootKey = Registry.CurrentUser.OpenSubKey($"{CTRegistryTree.ROOT}\\{CTRegistryTree.Items}");

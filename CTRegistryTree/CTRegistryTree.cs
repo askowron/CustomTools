@@ -53,7 +53,7 @@ namespace CTRegistryTree
             }
 
             items.Add(new ToolStripSeparator());
-            var manageItem = new ToolStripMenuItem("⚙ Zarządzaj", null, delegate {
+            var manageItem = new ToolStripMenuItem(Properties.Strings.Menu_Manage, null, delegate {
                 using (FrmManageItemsForm form = new FrmManageItemsForm())
                 {
                     form.ShowDialog();

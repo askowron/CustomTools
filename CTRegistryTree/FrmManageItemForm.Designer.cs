@@ -45,7 +45,7 @@
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(28, 13);
             this.label2.TabIndex = 2;
-            this.label2.Text = "Text";
+            this.label2.Text = Properties.Strings.Label_Text;
             // 
             // label1
             // 
@@ -54,7 +54,7 @@
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(37, 13);
             this.label1.TabIndex = 3;
-            this.label1.Text = "Action";
+            this.label1.Text = Properties.Strings.Label_Action;
             // 
             // tbText
             //
@@ -79,7 +79,7 @@
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(54, 13);
             this.label3.TabIndex = 6;
-            this.label3.Text = "Command";
+            this.label3.Text = Properties.Strings.Label_Command;
             //
             // tbCommand
             //
@@ -98,7 +98,7 @@
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 8;
-            this.button1.Text = "Find";
+            this.button1.Text = Properties.Strings.Button_Find;
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             //
@@ -108,7 +108,7 @@
             this.btnTest.Name = "btnTest";
             this.btnTest.Size = new System.Drawing.Size(75, 23);
             this.btnTest.TabIndex = 9;
-            this.btnTest.Text = "Testuj";
+            this.btnTest.Text = Properties.Strings.Button_Test;
             this.btnTest.UseVisualStyleBackColor = true;
             this.btnTest.Click += new System.EventHandler(this.btnTest_Click);
             //
@@ -131,7 +131,7 @@
             this.Name = "FrmManageItemForm";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Add / Edit Item";
+            this.Text = Properties.Strings.Form_ManageItem_Title;
             this.TopMost = true;
             this.Controls.SetChildIndex(this.label2, 0);
             this.Controls.SetChildIndex(this.label1, 0);

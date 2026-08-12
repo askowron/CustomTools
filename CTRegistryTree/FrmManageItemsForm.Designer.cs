@@ -43,7 +43,7 @@
             this.tvItems.Location = new System.Drawing.Point(12, 12);
             this.tvItems.Name = "tvItems";
             treeNode1.Name = "Root";
-            treeNode1.Text = "Root";
+            treeNode1.Text = Properties.Strings.Tree_Root;
             this.tvItems.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
             treeNode1});
             this.tvItems.Size = new System.Drawing.Size(278, 343);
@@ -57,7 +57,7 @@
             this.btnAdd.Name = "btnAdd";
             this.btnAdd.Size = new System.Drawing.Size(75, 23);
             this.btnAdd.TabIndex = 1;
-            this.btnAdd.Text = "Add";
+            this.btnAdd.Text = Properties.Strings.Button_Add;
             this.btnAdd.UseVisualStyleBackColor = true;
             this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
             // 
@@ -69,7 +69,7 @@
             this.btnEdit.Name = "btnEdit";
             this.btnEdit.Size = new System.Drawing.Size(75, 23);
             this.btnEdit.TabIndex = 2;
-            this.btnEdit.Text = "Edit";
+            this.btnEdit.Text = Properties.Strings.Button_Edit;
             this.btnEdit.UseVisualStyleBackColor = true;
             this.btnEdit.Click += new System.EventHandler(this.btnEdit_Click);
             // 
@@ -81,7 +81,7 @@
             this.btnRemove.Name = "btnRemove";
             this.btnRemove.Size = new System.Drawing.Size(75, 23);
             this.btnRemove.TabIndex = 3;
-            this.btnRemove.Text = "Remove";
+            this.btnRemove.Text = Properties.Strings.Button_Remove;
             this.btnRemove.UseVisualStyleBackColor = true;
             // 
             // FrmManageItemsForm
@@ -96,7 +96,7 @@
             this.MinimumSize = new System.Drawing.Size(400, 450);
             this.Name = "FrmManageItemsForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Manage Items";
+            this.Text = Properties.Strings.Form_ManageItems_Title;
             this.Controls.SetChildIndex(this.tvItems, 0);
             this.Controls.SetChildIndex(this.btnAdd, 0);
             this.Controls.SetChildIndex(this.btnEdit, 0);
