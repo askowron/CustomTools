@@ -57,4 +57,19 @@
   <data name="ActionType_OpenFile" xml:space="preserve">
     <value>Otwórz plik</value>
   </data>
+  <data name="Button_Import" xml:space="preserve">
+    <value>Importuj</value>
+  </data>
+  <data name="Button_Export" xml:space="preserve">
+    <value>Eksportuj</value>
+  </data>
+  <data name="Dialog_XmlFilter" xml:space="preserve">
+    <value>Pliki XML (*.xml)|*.xml</value>
+  </data>
+  <data name="Error_ImportFailed" xml:space="preserve">
+    <value>Nie udało się zaimportować elementów: {0}</value>
+  </data>
+  <data name="Error_ExportFailed" xml:space="preserve">
+    <value>Nie udało się wyeksportować elementów: {0}</value>
+  </data>
 </root>

@@ -138,5 +138,35 @@ namespace CTRegistryTree.Properties {
                 return ResourceManager.GetString("ActionType_OpenFile", resourceCulture);
             }
         }
+
+        internal static string Button_Import {
+            get {
+                return ResourceManager.GetString("Button_Import", resourceCulture);
+            }
+        }
+
+        internal static string Button_Export {
+            get {
+                return ResourceManager.GetString("Button_Export", resourceCulture);
+            }
+        }
+
+        internal static string Dialog_XmlFilter {
+            get {
+                return ResourceManager.GetString("Dialog_XmlFilter", resourceCulture);
+            }
+        }
+
+        internal static string Error_ImportFailed {
+            get {
+                return ResourceManager.GetString("Error_ImportFailed", resourceCulture);
+            }
+        }
+
+        internal static string Error_ExportFailed {
+            get {
+                return ResourceManager.GetString("Error_ExportFailed", resourceCulture);
+            }
+        }
     }
 }
