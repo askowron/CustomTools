@@ -7,7 +7,8 @@ namespace CTRegistryTree
     public class RegistryTreeItem
     {
         /// <summary>
-        /// Specifies the type of action to perform, such as running a command, opening a URL, or opening a file.
+        /// Specifies the type of action to perform, such as running a command, opening a URL, opening a file,
+        /// or acting as a pure submenu container with no runnable action.
         /// </summary>
         /// <remarks>Use <see cref="ActionType"/> to indicate the intended operation in APIs that support
         /// multiple action types. The values correspond to distinct behaviors and may affect how parameters are

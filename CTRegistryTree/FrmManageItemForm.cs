@@ -7,9 +7,10 @@ namespace CTRegistryTree
     public partial class FrmManageItemForm : FrmTemplateDialog
     {
         /// <summary>
-        /// Action types in the exact order they're added to <c>cbAction</c>, so that
-        /// <c>cbAction.SelectedIndex + 1</c> / <c>(int)Item.Action - 1</c> keep mapping
-        /// correctly to the enum's declared values (RunCommand=1, OpenUrl=2, OpenFile=3).
+        /// Action types in the exact order they're added to <c>cbAction</c>. This array is the
+        /// single source of truth for mapping <c>cbAction.SelectedIndex</c> to an <see
+        /// cref="RegistryTreeItem.ActionType"/> — always read the selection through
+        /// <c>actionOrder[cbAction.SelectedIndex]</c>, never by arithmetic on the enum's values.
         /// </summary>
         private static readonly RegistryTreeItem.ActionType[] actionOrder = new[]
         {
@@ -91,7 +92,7 @@ namespace CTRegistryTree
         private RegistryTreeItem BuildItem(RegistryTreeItem item)
         {
             item.Text = tbText.Text;
-            item.Action = (RegistryTreeItem.ActionType)(cbAction.SelectedIndex + 1);
+            item.Action = actionOrder[cbAction.SelectedIndex];
             item.Command = tbCommand.Text;
             if (string.IsNullOrEmpty(item.Path) || item.Path == "/")
                 item.Path = $"{parentPath}/{item.Id}";
@@ -119,7 +120,7 @@ namespace CTRegistryTree
 
         private void btnTest_Click(object sender, EventArgs e)
         {
-            var action = (RegistryTreeItem.ActionType)(cbAction.SelectedIndex + 1);
+            var action = actionOrder[cbAction.SelectedIndex];
             var testItem = new RegistryTreeItem(Guid.NewGuid(), tbText.Text, action, tbCommand.Text);
             CTRegistryTree.ExecuteAction(testItem);
         }

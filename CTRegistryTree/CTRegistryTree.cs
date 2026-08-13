@@ -76,7 +76,8 @@ namespace CTRegistryTree
 
         /// <summary>
         /// Recursively builds menu items from a registry key: leaf items become clickable menu items that
-        /// execute their action, items with children become submenus.
+        /// execute their action, items with children become submenus, and an item explicitly typed
+        /// <see cref="RegistryTreeItem.ActionType.Submenu"/> with no children renders as a disabled placeholder.
         /// </summary>
         private static IEnumerable<ToolStripItem> BuildMenuItems(RegistryKey parentKey)
         {
