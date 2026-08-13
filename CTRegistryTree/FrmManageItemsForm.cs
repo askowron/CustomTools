@@ -1,7 +1,9 @@
 using CTPlugins;
 using Microsoft.Win32;
 using System;
+using System.Linq;
 using System.Windows.Forms;
+using System.Xml.Linq;
 
 namespace CTRegistryTree
 {
@@ -91,6 +93,26 @@ namespace CTRegistryTree
                     RemoveItem(item);
 
                 tvItems.SelectedNode.Remove();
+            }
+        }
+
+        private void btnExport_Click(object sender, EventArgs e)
+        {
+            using (var dialog = new SaveFileDialog { Filter = Properties.Strings.Dialog_XmlFilter, FileName = "RegistryTreeItems.xml" })
+            {
+                if (dialog.ShowDialog(this) != DialogResult.OK)
+                    return;
+
+                try
+                {
+                    TreeNode rootNode = tvItems.Nodes[0];
+                    XDocument document = RegistryTreeXmlSerializer.Export(rootNode.Nodes.Cast<TreeNode>());
+                    document.Save(dialog.FileName);
+                }
+                catch (Exception exc)
+                {
+                    MessageBox.Show(string.Format(Properties.Strings.Error_ExportFailed, exc.Message), Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
             }
         }
 
