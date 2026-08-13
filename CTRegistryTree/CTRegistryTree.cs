@@ -85,11 +85,15 @@ namespace CTRegistryTree
                 using (var subKey = parentKey.OpenSubKey(subKeyName))
                 {
                     var item = (RegistryTreeItem)subKey;
+                    bool isContainer = subKey.SubKeyCount > 0 || item.Action == RegistryTreeItem.ActionType.Submenu;
 
-                    if (subKey.SubKeyCount > 0)
+                    if (isContainer)
                     {
                         var menuItem = new ToolStripMenuItem(item.Text);
-                        menuItem.DropDownItems.AddRange(BuildMenuItems(subKey).ToArray());
+                        if (subKey.SubKeyCount > 0)
+                            menuItem.DropDownItems.AddRange(BuildMenuItems(subKey).ToArray());
+                        else
+                            menuItem.Enabled = false;
                         yield return menuItem;
                     }
                     else
