@@ -1,6 +1,7 @@
 using CTPlugins;
 using Microsoft.Win32;
 using System;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using System.Xml.Linq;
@@ -114,6 +115,47 @@ namespace CTRegistryTree
                     MessageBox.Show(string.Format(Properties.Strings.Error_ExportFailed, exc.Message), Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
             }
+        }
+
+        private void btnImport_Click(object sender, EventArgs e)
+        {
+            using (var dialog = new OpenFileDialog { Filter = Properties.Strings.Dialog_XmlFilter })
+            {
+                if (dialog.ShowDialog(this) != DialogResult.OK)
+                    return;
+
+                try
+                {
+                    string xml = File.ReadAllText(dialog.FileName);
+                    var importedItems = RegistryTreeXmlSerializer.Import(xml);
+
+                    TreeNode targetNode = tvItems.SelectedNode ?? tvItems.Nodes[0];
+                    string targetPath = ((RegistryTreeItem)targetNode.Tag)?.Path ?? "";
+
+                    foreach (var imported in importedItems)
+                        targetNode.Nodes.Add(BuildImportedNode(imported, targetPath));
+
+                    if (!targetNode.IsExpanded)
+                        targetNode.Expand();
+                }
+                catch (Exception exc)
+                {
+                    MessageBox.Show(string.Format(Properties.Strings.Error_ImportFailed, exc.Message), Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
+        }
+
+        private static TreeNode BuildImportedNode(RegistryTreeImportedItem imported, string parentPath)
+        {
+            Guid id = Guid.NewGuid();
+            var item = new RegistryTreeItem(id, imported.Text, imported.Action, imported.Command, $"{parentPath}/{id}");
+            SaveItem(item);
+
+            var node = (TreeNode)item;
+            foreach (var child in imported.Children)
+                node.Nodes.Add(BuildImportedNode(child, item.Path));
+
+            return node;
         }
 
         private static void SaveItem(RegistryTreeItem item)

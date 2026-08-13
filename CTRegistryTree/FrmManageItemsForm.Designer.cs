@@ -34,6 +34,7 @@
             this.btnEdit = new System.Windows.Forms.Button();
             this.btnRemove = new System.Windows.Forms.Button();
             this.btnExport = new System.Windows.Forms.Button();
+            this.btnImport = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // tvItems
@@ -96,11 +97,23 @@
             this.btnExport.UseVisualStyleBackColor = true;
             this.btnExport.Click += new System.EventHandler(this.btnExport_Click);
             //
+            // btnImport
+            //
+            this.btnImport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnImport.Location = new System.Drawing.Point(296, 128);
+            this.btnImport.Name = "btnImport";
+            this.btnImport.Size = new System.Drawing.Size(75, 23);
+            this.btnImport.TabIndex = 5;
+            this.btnImport.Text = Properties.Strings.Button_Import;
+            this.btnImport.UseVisualStyleBackColor = true;
+            this.btnImport.Click += new System.EventHandler(this.btnImport_Click);
+            //
             // FrmManageItemsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(384, 411);
+            this.Controls.Add(this.btnImport);
             this.Controls.Add(this.btnExport);
             this.Controls.Add(this.btnRemove);
             this.Controls.Add(this.btnEdit);
@@ -115,6 +128,7 @@
             this.Controls.SetChildIndex(this.btnEdit, 0);
             this.Controls.SetChildIndex(this.btnRemove, 0);
             this.Controls.SetChildIndex(this.btnExport, 0);
+            this.Controls.SetChildIndex(this.btnImport, 0);
             this.ResumeLayout(false);
 
         }
@@ -126,5 +140,6 @@
         private System.Windows.Forms.Button btnEdit;
         private System.Windows.Forms.Button btnRemove;
         private System.Windows.Forms.Button btnExport;
+        private System.Windows.Forms.Button btnImport;
     }
 }
