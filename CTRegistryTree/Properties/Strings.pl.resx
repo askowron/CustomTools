@@ -57,6 +57,9 @@
   <data name="ActionType_OpenFile" xml:space="preserve">
     <value>Otwórz plik</value>
   </data>
+  <data name="ActionType_Submenu" xml:space="preserve">
+    <value>Podmenu</value>
+  </data>
   <data name="Button_Import" xml:space="preserve">
     <value>Importuj</value>
   </data>

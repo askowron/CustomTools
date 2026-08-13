@@ -16,7 +16,8 @@ namespace CTRegistryTree
         {
             RunCommand = 1,
             OpenUrl = 2,
-            OpenFile = 3
+            OpenFile = 3,
+            Submenu = 4
         }
 
         /// <summary>

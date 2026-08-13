@@ -139,6 +139,12 @@ namespace CTRegistryTree.Properties {
             }
         }
 
+        internal static string ActionType_Submenu {
+            get {
+                return ResourceManager.GetString("ActionType_Submenu", resourceCulture);
+            }
+        }
+
         internal static string Button_Import {
             get {
                 return ResourceManager.GetString("Button_Import", resourceCulture);
