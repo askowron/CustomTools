@@ -71,6 +71,7 @@
             this.cbAction.Name = "cbAction";
             this.cbAction.Size = new System.Drawing.Size(354, 21);
             this.cbAction.TabIndex = 5;
+            this.cbAction.SelectedIndexChanged += new System.EventHandler(this.cbAction_SelectedIndexChanged);
             //
             // label3
             //

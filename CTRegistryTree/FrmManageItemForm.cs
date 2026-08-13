@@ -15,7 +15,8 @@ namespace CTRegistryTree
         {
             RegistryTreeItem.ActionType.RunCommand,
             RegistryTreeItem.ActionType.OpenUrl,
-            RegistryTreeItem.ActionType.OpenFile
+            RegistryTreeItem.ActionType.OpenFile,
+            RegistryTreeItem.ActionType.Submenu
         };
 
         public RegistryTreeItem Item { get; private set; }
@@ -29,6 +30,7 @@ namespace CTRegistryTree
             parentPath = path;
             PopulateActionItems();
             cbAction.SelectedIndex = 0;
+            UpdateCommandFieldsEnabled();
 
             OKClicked += delegate { Item = BuildItem(new RegistryTreeItem()); };
             CancelClicked += delegate { Item = null; };
@@ -40,6 +42,7 @@ namespace CTRegistryTree
 
             PopulateActionItems();
             SetItem(item);
+            UpdateCommandFieldsEnabled();
 
             OKClicked += delegate { Item = BuildItem(Item); };
             CancelClicked += delegate { Item = item; };
@@ -53,6 +56,21 @@ namespace CTRegistryTree
             }
         }
 
+        private void cbAction_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            UpdateCommandFieldsEnabled();
+        }
+
+        private void UpdateCommandFieldsEnabled()
+        {
+            bool isSubmenu = cbAction.SelectedIndex >= 0
+                && actionOrder[cbAction.SelectedIndex] == RegistryTreeItem.ActionType.Submenu;
+
+            tbCommand.Enabled = !isSubmenu;
+            button1.Enabled = !isSubmenu;
+            btnTest.Enabled = !isSubmenu;
+        }
+
         private static string GetActionDisplayText(RegistryTreeItem.ActionType action)
         {
             switch (action)
@@ -63,6 +81,8 @@ namespace CTRegistryTree
                     return Properties.Strings.ActionType_OpenUrl;
                 case RegistryTreeItem.ActionType.OpenFile:
                     return Properties.Strings.ActionType_OpenFile;
+                case RegistryTreeItem.ActionType.Submenu:
+                    return Properties.Strings.ActionType_Submenu;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(action), action, null);
             }
