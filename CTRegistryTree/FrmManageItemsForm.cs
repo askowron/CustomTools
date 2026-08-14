@@ -1,6 +1,7 @@
 using CTPlugins;
 using Microsoft.Win32;
 using System;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -13,13 +14,28 @@ namespace CTRegistryTree
         public FrmManageItemsForm()
         {
             InitializeComponent();
+            InitializeIcons();
             LoadTree();
+        }
+
+        private void InitializeIcons()
+        {
+            ImageList imageList = new ImageList();
+            imageList.ImageSize = new Size(16, 16);
+            imageList.ColorDepth = ColorDepth.Depth32Bit;
+            foreach (RegistryTreeItem.ActionType action in Enum.GetValues(typeof(RegistryTreeItem.ActionType)))
+            {
+                imageList.Images.Add(action.ToString(), RegistryTreeIcons.GetImage(action));
+            }
+            tvItems.ImageList = imageList;
         }
 
         private void LoadTree()
         {
             tvItems.Nodes.Clear();
             var rootNode = new TreeNode(Properties.Strings.Tree_Root);
+            rootNode.ImageKey = RegistryTreeItem.ActionType.Submenu.ToString();
+            rootNode.SelectedImageKey = RegistryTreeItem.ActionType.Submenu.ToString();
             tvItems.Nodes.Add(rootNode);
 
             var rootKey = Registry.CurrentUser.OpenSubKey($"{CTRegistryTree.ROOT}\\{CTRegistryTree.Items}");
@@ -80,6 +96,8 @@ namespace CTRegistryTree
 
                         tvItems.SelectedNode.Text = form.Item.Text;
                         tvItems.SelectedNode.Tag = form.Item;
+                        tvItems.SelectedNode.ImageKey = form.Item.Action.ToString();
+                        tvItems.SelectedNode.SelectedImageKey = form.Item.Action.ToString();
                     }
                 }
             }

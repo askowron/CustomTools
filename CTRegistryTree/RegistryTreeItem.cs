@@ -158,6 +158,8 @@ namespace CTRegistryTree
             if (item == null) return null;
             TreeNode node = new TreeNode(item.Text);
             node.Tag = item;
+            node.ImageKey = item.Action.ToString();
+            node.SelectedImageKey = item.Action.ToString();
             return node;
         }
     }
