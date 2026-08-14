@@ -28,4 +28,4 @@ CustomTools is a Windows system-tray application (`CustomTools/Program.cs`) with
 
 To add a new plugin: create a `Library` project referencing `CTPlugins`, implement `ICTPlugin`, tag the class with `[CustomToolsPlugin(name, version)]`, and set its Debug `OutputPath` to `..\CustomTools\bin\Debug\Plugins\` (matching `CTRegistryTree`'s pattern) so the host discovers it.
 
-Known incomplete areas: the host's "Opcje" menu item is not wired to `FrmOptions` (just shows a placeholder `MessageBox`), and `CTRegistryTree`'s remove flow only removes the `TreeNode` from the UI tree — the corresponding registry key deletion is commented out.
+Known incomplete areas: the host's "Opcje" menu item is not wired to `FrmOptions` (just shows a placeholder `MessageBox`).
