@@ -92,9 +92,17 @@ namespace CTRegistryTree
                     {
                         var menuItem = new ToolStripMenuItem(item.Text);
                         if (subKey.SubKeyCount > 0)
+                        {
+                            // The native ToolStripMenuItem expand-arrow glyph doesn't render reliably in
+                            // this app's tray menu (observed clipped/missing under some Windows theming),
+                            // so draw our own indicator directly into the text instead.
+                            menuItem.Text = $"{item.Text} ▶";
                             menuItem.DropDownItems.AddRange(BuildMenuItems(subKey).ToArray());
+                        }
                         else
+                        {
                             menuItem.Enabled = false;
+                        }
                         yield return menuItem;
                     }
                     else
