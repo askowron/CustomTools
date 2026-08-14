@@ -65,10 +65,11 @@ namespace CTRegistryTree
 
             // Zamiast osobnego wiersza z podpisem, cała sekcja tej wtyczki jest oznaczana
             // wspólnym Tagiem, który GroupLabelRenderer rysuje jako pionową etykietę z lewej strony.
+            // Reserwacja miejsca na tę etykietę odbywa się na poziomie kontenera (ContextMenuStrip.Padding
+            // w Program.cs), nie tutaj przez Margin — patrz komentarz przy jej ustawieniu.
             foreach (var item in items)
             {
                 item.Tag = Name;
-                item.Margin = new Padding(GroupLabelRenderer.DefaultLabelWidth, item.Margin.Top, item.Margin.Right, item.Margin.Bottom);
             }
 
             return items.ToArray();
@@ -92,17 +93,9 @@ namespace CTRegistryTree
                     {
                         var menuItem = new ToolStripMenuItem(item.Text);
                         if (subKey.SubKeyCount > 0)
-                        {
-                            // The native ToolStripMenuItem expand-arrow glyph doesn't render reliably in
-                            // this app's tray menu (observed clipped/missing under some Windows theming),
-                            // so draw our own indicator directly into the text instead.
-                            menuItem.Text = $"{item.Text} ▶";
                             menuItem.DropDownItems.AddRange(BuildMenuItems(subKey).ToArray());
-                        }
                         else
-                        {
                             menuItem.Enabled = false;
-                        }
                         yield return menuItem;
                     }
                     else

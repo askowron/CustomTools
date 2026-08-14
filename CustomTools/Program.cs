@@ -33,6 +33,12 @@ namespace CustomTools
             ContextMenuStrip menu = new ContextMenuStrip();
             menu.ShowImageMargin = false;
             menu.Renderer = new GroupLabelRenderer();
+            // Reserve room for GroupLabelRenderer's vertical group-label column on the container
+            // itself (Padding), not per item (Margin) — ToolStripDropDownMenu's auto-sizing shrinks
+            // each auto-sized item's own width by its Margin, which clips content that assumed the
+            // full, unshrunk width (e.g. the submenu expand arrow). Padding grows the container
+            // instead, so items keep their full correct width.
+            menu.Padding = new Padding(GroupLabelRenderer.DefaultLabelWidth, menu.Padding.Top, menu.Padding.Right, menu.Padding.Bottom);
             menu.Opening += (s, e) => RebuildMenu(menu, plugins);
             RebuildMenu(menu, plugins);
 
