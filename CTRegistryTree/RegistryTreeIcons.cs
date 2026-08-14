@@ -62,20 +62,28 @@ namespace CTRegistryTree
                 case RegistryTreeItem.ActionType.Submenu:
                     return GetShellIcon("folder", FILE_ATTRIBUTE_DIRECTORY);
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(action), action, null);
+                    return null;
             }
         }
 
         private static Image GetShellIcon(string fakePath, uint fileAttributes)
         {
             SHFILEINFO shfi = new SHFILEINFO();
-            SHGetFileInfo(fakePath, fileAttributes, ref shfi, (uint)Marshal.SizeOf(shfi), SHGFI_ICON | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
+            IntPtr result = SHGetFileInfo(fakePath, fileAttributes, ref shfi, (uint)Marshal.SizeOf(shfi), SHGFI_ICON | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
 
-            using (Icon icon = Icon.FromHandle(shfi.hIcon))
+            if (result == IntPtr.Zero || shfi.hIcon == IntPtr.Zero)
+                return null;
+
+            try
             {
-                Image image = icon.ToBitmap();
+                using (Icon icon = Icon.FromHandle(shfi.hIcon))
+                {
+                    return icon.ToBitmap();
+                }
+            }
+            finally
+            {
                 DestroyIcon(shfi.hIcon);
-                return image;
             }
         }
     }

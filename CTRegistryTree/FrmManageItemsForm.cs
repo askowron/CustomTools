@@ -25,7 +25,9 @@ namespace CTRegistryTree
             imageList.ColorDepth = ColorDepth.Depth32Bit;
             foreach (RegistryTreeItem.ActionType action in Enum.GetValues(typeof(RegistryTreeItem.ActionType)))
             {
-                imageList.Images.Add(action.ToString(), RegistryTreeIcons.GetImage(action));
+                Image image = RegistryTreeIcons.GetImage(action);
+                if (image != null)
+                    imageList.Images.Add(action.ToString(), image);
             }
             tvItems.ImageList = imageList;
         }
