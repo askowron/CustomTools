@@ -55,12 +55,6 @@ namespace CustomTools.Properties {
             }
         }
 
-        internal static string TrayMenu_OptionsPlaceholder {
-            get {
-                return ResourceManager.GetString("TrayMenu_OptionsPlaceholder", resourceCulture);
-            }
-        }
-
         internal static string TrayMenu_Exit {
             get {
                 return ResourceManager.GetString("TrayMenu_Exit", resourceCulture);

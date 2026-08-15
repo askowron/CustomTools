@@ -15,9 +15,6 @@
   <data name="TrayMenu_Options" xml:space="preserve">
     <value>Opcje</value>
   </data>
-  <data name="TrayMenu_OptionsPlaceholder" xml:space="preserve">
-    <value>Kliknięto opcję 2</value>
-  </data>
   <data name="TrayMenu_Exit" xml:space="preserve">
     <value>Zamknij</value>
   </data>

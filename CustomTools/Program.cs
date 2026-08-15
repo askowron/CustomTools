@@ -67,7 +67,13 @@ namespace CustomTools
                 menu.Items.AddRange(plugin.GetMenuItems());
             }
             menu.Items.Add(new ToolStripSeparator());
-            menu.Items.Add(Strings.TrayMenu_Options, null, (s, e) => MessageBox.Show(Strings.TrayMenu_OptionsPlaceholder));
+            menu.Items.Add(Strings.TrayMenu_Options, null, (s, e) =>
+            {
+                using (FrmOptions form = new FrmOptions())
+                {
+                    form.ShowDialog();
+                }
+            });
             menu.Items.Add(new ToolStripSeparator());
             menu.Items.Add(Strings.TrayMenu_Exit, null, (s, e) => Application.Exit());
         }
