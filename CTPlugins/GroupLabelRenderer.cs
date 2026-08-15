@@ -25,7 +25,14 @@ namespace CTPlugins
     /// </summary>
     public class GroupLabelRenderer : ToolStripProfessionalRenderer
     {
-        public const int DefaultLabelWidth = 20;
+        // Matches ToolStripDropDownMenu's own default image-margin width at 100% DPI scaling
+        // (its internal DefaultImageMarginWidth=24, +1) — used only as a fallback until
+        // OnRenderImageMargin reports the framework's real, possibly DPI-scaled value. On the
+        // very first ever paint, OnRenderToolStripBackground (which draws the whole group's
+        // band) runs before OnRenderImageMargin does, so a fallback that doesn't match left a
+        // gap-shaped artifact between that first band and the next, already-correct redraw of
+        // whichever row got individually repainted (e.g. the one under the cursor).
+        public const int DefaultLabelWidth = 25;
 
         public Font LabelFont { get; set; } = new Font("Segoe UI", 9f, FontStyle.Regular);
         public Color LabelColor { get; set; } = Color.DimGray;
