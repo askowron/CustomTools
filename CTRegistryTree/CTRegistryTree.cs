@@ -82,9 +82,9 @@ namespace CTRegistryTree
             manageItem.Font = new Font(manageItem.Font.FontFamily, manageItem.Font.Size - 1, manageItem.Font.Style);
             items.Add(manageItem);
 
-            // Zamiast osobnego wiersza z podpisem, cała sekcja tej wtyczki jest oznaczana
-            // wspólnym Tagiem, który GroupLabelRenderer rysuje jako pionową etykietę z lewej strony,
-            // w natywnej kolumnie marginesu obrazków (ContextMenuStrip.ShowImageMargin w Program.cs).
+            // Instead of a separate caption row, this whole plugin's section is marked with a shared
+            // Tag, which GroupLabelRenderer draws as a vertical label on the left, in the native image
+            // margin column (ContextMenuStrip.ShowImageMargin in Program.cs).
             foreach (var item in items)
             {
                 item.Tag = Name;

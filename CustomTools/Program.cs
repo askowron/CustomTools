@@ -21,14 +21,14 @@ namespace CustomTools
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            // Tworzymy ikonę w trayu
+            // Create the tray icon
             NotifyIcon trayIcon = new NotifyIcon();
             trayIcon.Icon = new System.Drawing.Icon(new MemoryStream(Resources.favicon));
             trayIcon.Visible = true;
             trayIcon.Text = "Custom Tools";
 
-            // Wyszukujemy pluginy raz, ale odbudowujemy zawartość menu przy każdym otwarciu,
-            // żeby zmiany zapisane przez pluginy (np. w rejestrze) były od razu widoczne.
+            // Find plugins once, but rebuild the menu contents on every open, so changes
+            // plugins persist (e.g. in the registry) show up immediately.
             List<ICTPlugin> plugins = CTPlugins.CTPlugins.FindPlugins();
             ContextMenuStrip menu = new ContextMenuStrip();
             // ShowImageMargin=true reserves WinForms' native left image-margin column across
@@ -43,19 +43,19 @@ namespace CustomTools
             menu.Opening += (s, e) => RebuildMenu(menu, plugins);
             RebuildMenu(menu, plugins);
 
-            // Podpinamy menu do ikony
+            // Attach the menu to the icon
             trayIcon.ContextMenuStrip = menu;
 
-            // Możemy też reagować na kliknięcie lewym przyciskiem
+            // We can also react to a left-click
             trayIcon.MouseClick += (s, e) =>
             {
                 if (e.Button == MouseButtons.Left)
                 {
-                    menu.Show(Cursor.Position); // pokazuje menu przy kursore
+                    menu.Show(Cursor.Position); // shows the menu at the cursor
                 }
             };
 
-            // Uruchamiamy pętlę aplikacji bez okna
+            // Run the application loop with no window
             Application.Run();
         }
 
