@@ -2,6 +2,7 @@ using CTPlugins;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -14,7 +15,22 @@ namespace CTRegistryTree
         public FrmManageItemsForm()
         {
             InitializeComponent();
+            InitializeIcons();
             RefreshTree(null);
+        }
+
+        private void InitializeIcons()
+        {
+            ImageList imageList = new ImageList();
+            imageList.ImageSize = new Size(16, 16);
+            imageList.ColorDepth = ColorDepth.Depth32Bit;
+            foreach (RegistryTreeItem.ActionType action in Enum.GetValues(typeof(RegistryTreeItem.ActionType)))
+            {
+                Image image = RegistryTreeIcons.GetImage(action);
+                if (image != null)
+                    imageList.Images.Add(action.ToString(), image);
+            }
+            tvItems.ImageList = imageList;
         }
 
         /// <summary>
@@ -26,6 +42,8 @@ namespace CTRegistryTree
         {
             tvItems.Nodes.Clear();
             var rootNode = new TreeNode(Properties.Strings.Tree_Root);
+            rootNode.ImageKey = RegistryTreeItem.ActionType.Submenu.ToString();
+            rootNode.SelectedImageKey = RegistryTreeItem.ActionType.Submenu.ToString();
             tvItems.Nodes.Add(rootNode);
 
             List<RegistryTreeItem> allItems = CTRegistryTree.ReadAllItems();

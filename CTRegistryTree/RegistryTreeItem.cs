@@ -152,6 +152,8 @@ namespace CTRegistryTree
         /// Converts a <see cref="RegistryTreeItem"/> instance to a <see cref="TreeNode"/>. LocalMachine
         /// items get a " (LM)" text suffix and a muted gray color, so mixed-scope siblings stay
         /// distinguishable in every tree that renders items this way (manage-items tree, import preview).
+        /// The node's ImageKey/SelectedImageKey are set from the item's Action, matched against an
+        /// ImageList keyed by ActionType name (see FrmManageItemsForm.InitializeIcons).
         /// </summary>
         public static explicit operator TreeNode(RegistryTreeItem item)
         {
@@ -165,6 +167,8 @@ namespace CTRegistryTree
             if (isLocalMachine)
                 node.ForeColor = Color.FromArgb(100, 100, 100);
 
+            node.ImageKey = item.Action.ToString();
+            node.SelectedImageKey = item.Action.ToString();
             return node;
         }
     }
