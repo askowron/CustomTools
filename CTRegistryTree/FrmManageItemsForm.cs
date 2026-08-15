@@ -115,12 +115,19 @@ namespace CTRegistryTree
             if (originalItem == null)
                 return;
 
+            // FrmManageItemForm's edit constructor mutates the same RegistryTreeItem instance we pass
+            // it in place (Item == the object passed in), so originalItem.ItemScope would already reflect
+            // the NEW scope by the time the dialog closes. Snapshot the pre-edit scope and hive location
+            // now, before the dialog can mutate anything, so the scope-change check below is meaningful.
+            RegistryTreeItem.Scope originalScope = originalItem.ItemScope;
+            Guid originalId = originalItem.Id;
+
             using (FrmManageItemForm form = new FrmManageItemForm(originalItem))
             {
                 if (form.ShowDialog() == DialogResult.OK)
                 {
-                    if (form.Item.ItemScope != originalItem.ItemScope)
-                        DeleteOwnKey(originalItem);
+                    if (form.Item.ItemScope != originalScope)
+                        DeleteOwnKey(originalScope, originalId);
 
                     SaveItem(form.Item);
                     RefreshTree(form.Item.Id);
@@ -253,10 +260,15 @@ namespace CTRegistryTree
 
         private static void DeleteOwnKey(RegistryTreeItem item)
         {
-            RegistryKey hive = item.ItemScope == RegistryTreeItem.Scope.LocalMachine ? Registry.LocalMachine : Registry.CurrentUser;
+            DeleteOwnKey(item.ItemScope, item.Id);
+        }
+
+        private static void DeleteOwnKey(RegistryTreeItem.Scope scope, Guid id)
+        {
+            RegistryKey hive = scope == RegistryTreeItem.Scope.LocalMachine ? Registry.LocalMachine : Registry.CurrentUser;
             using (var itemsKey = hive.OpenSubKey($@"{CTRegistryTree.ROOT}\{CTRegistryTree.Items}", true))
             {
-                itemsKey?.DeleteSubKeyTree(item.Id.ToString(), false);
+                itemsKey?.DeleteSubKeyTree(id.ToString(), false);
             }
         }
 
