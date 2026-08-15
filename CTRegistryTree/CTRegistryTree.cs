@@ -166,10 +166,15 @@ namespace CTRegistryTree
         /// Recursively builds menu items from the in-memory parent/child map: leaf items become clickable
         /// menu items that execute their action, items with children become submenus, and an item
         /// explicitly typed <see cref="RegistryTreeItem.ActionType.Submenu"/> with no children renders as
-        /// a disabled placeholder.
+        /// a disabled placeholder. Cycles (including degenerate Id==Guid.Empty cases) are guarded by a
+        /// visited set threaded through the recursion — if an item's Id has already been visited on this
+        /// path, it is rendered with an empty dropdown to prevent infinite recursion.
         /// </summary>
-        private static IEnumerable<ToolStripItem> BuildMenuItems(Guid parentId, Dictionary<Guid, List<RegistryTreeItem>> childrenByParent)
+        private static IEnumerable<ToolStripItem> BuildMenuItems(Guid parentId, Dictionary<Guid, List<RegistryTreeItem>> childrenByParent, HashSet<Guid> visited = null)
         {
+            if (visited == null)
+                visited = new HashSet<Guid> { Guid.Empty };
+
             List<RegistryTreeItem> children;
             if (!childrenByParent.TryGetValue(parentId, out children))
                 yield break;
@@ -181,10 +186,21 @@ namespace CTRegistryTree
                 if (isContainer)
                 {
                     var menuItem = new ToolStripMenuItem(item.Text);
-                    if (childrenByParent.ContainsKey(item.Id))
-                        menuItem.DropDownItems.AddRange(BuildMenuItems(item.Id, childrenByParent).ToArray());
-                    else
+
+                    // Guard against cycles: only recurse if we haven't visited this item yet
+                    if (childrenByParent.ContainsKey(item.Id) && !visited.Contains(item.Id))
+                    {
+                        var newVisited = new HashSet<Guid>(visited);
+                        newVisited.Add(item.Id);
+                        menuItem.DropDownItems.AddRange(BuildMenuItems(item.Id, childrenByParent, newVisited).ToArray());
+                    }
+                    else if (!childrenByParent.ContainsKey(item.Id))
+                    {
+                        // Explicitly marked as Submenu but has no children: disable
                         menuItem.Enabled = false;
+                    }
+                    // else: has children but cycle detected; leave dropdown empty (don't recurse)
+
                     yield return menuItem;
                 }
                 else
