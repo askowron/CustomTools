@@ -1,6 +1,7 @@
 using CTPlugins;
 using Microsoft.Win32;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -13,39 +14,62 @@ namespace CTRegistryTree
         public FrmManageItemsForm()
         {
             InitializeComponent();
-            LoadTree();
+            RefreshTree(null);
         }
 
-        private void LoadTree()
+        /// <summary>
+        /// Reloads the tree from both hives (merged by ParentId, LocalMachine-first at every level — same
+        /// logic <see cref="CTRegistryTree"/> uses for the live menu) and, if <paramref name="selectId"/>
+        /// is given, re-selects and reveals that item.
+        /// </summary>
+        private void RefreshTree(Guid? selectId)
         {
             tvItems.Nodes.Clear();
             var rootNode = new TreeNode(Properties.Strings.Tree_Root);
             tvItems.Nodes.Add(rootNode);
 
-            var rootKey = Registry.CurrentUser.OpenSubKey($"{CTRegistryTree.ROOT}\\{CTRegistryTree.Items}");
-            if (rootKey != null)
-            {
-                using (rootKey)
-                {
-                    LoadNodes(rootKey, rootNode);
-                }
-            }
+            List<RegistryTreeItem> allItems = CTRegistryTree.ReadAllItems();
+            Dictionary<Guid, List<RegistryTreeItem>> childrenByParent = CTRegistryTree.GroupByParent(allItems);
+
+            BuildTreeNodes(Guid.Empty, rootNode, childrenByParent);
 
             rootNode.Expand();
+
+            if (selectId.HasValue)
+                SelectNodeById(rootNode, selectId.Value);
+
+            tvItems_AfterSelect(tvItems, null);
         }
 
-        private static void LoadNodes(RegistryKey key, TreeNode parentNode)
+        private static void BuildTreeNodes(Guid parentId, TreeNode parentNode, Dictionary<Guid, List<RegistryTreeItem>> childrenByParent)
         {
-            foreach (var subKeyName in key.GetSubKeyNames())
+            List<RegistryTreeItem> children;
+            if (!childrenByParent.TryGetValue(parentId, out children))
+                return;
+
+            foreach (var item in children)
             {
-                using (var subKey = key.OpenSubKey(subKeyName))
-                {
-                    var item = (RegistryTreeItem)subKey;
-                    var node = (TreeNode)item;
-                    parentNode.Nodes.Add(node);
-                    LoadNodes(subKey, node);
-                }
+                var node = (TreeNode)item;
+                parentNode.Nodes.Add(node);
+                BuildTreeNodes(item.Id, node, childrenByParent);
             }
+        }
+
+        private static bool SelectNodeById(TreeNode node, Guid id)
+        {
+            foreach (TreeNode child in node.Nodes)
+            {
+                var item = (RegistryTreeItem)child.Tag;
+                if (item != null && item.Id == id)
+                {
+                    child.TreeView.SelectedNode = child;
+                    child.EnsureVisible();
+                    return true;
+                }
+                if (SelectNodeById(child, id))
+                    return true;
+            }
+            return false;
         }
 
         private void btnAdd_Click(object sender, EventArgs e)
@@ -53,16 +77,16 @@ namespace CTRegistryTree
             if (tvItems.SelectedNode == null)
                 return;
 
-            using(FrmManageItemForm form = new FrmManageItemForm(((RegistryTreeItem)tvItems.SelectedNode.Tag)?.Path ?? ""))
+            var parentItem = (RegistryTreeItem)tvItems.SelectedNode.Tag;
+            Guid parentId = parentItem?.Id ?? Guid.Empty;
+            RegistryTreeItem.Scope? parentScope = parentItem?.ItemScope;
+
+            using (FrmManageItemForm form = new FrmManageItemForm(parentId, parentScope))
             {
-                if(form.ShowDialog() == DialogResult.OK)
+                if (form.ShowDialog() == DialogResult.OK)
                 {
                     SaveItem(form.Item);
-
-                    tvItems.SelectedNode.Nodes.Add((TreeNode)form.Item);
-                    if(!tvItems.SelectedNode.IsExpanded)
-                        tvItems.SelectedNode.Expand();
-
+                    RefreshTree(form.Item.Id);
                     tvItems.Focus();
                 }
             }
@@ -70,31 +94,46 @@ namespace CTRegistryTree
 
         private void btnEdit_Click(object sender, EventArgs e)
         {
-            if(tvItems.SelectedNode != null)
-            {
-                using(FrmManageItemForm form = new FrmManageItemForm((RegistryTreeItem)tvItems.SelectedNode?.Tag))
-                {
-                    if(form.ShowDialog() == DialogResult.OK)
-                    {
-                        SaveItem(form.Item);
+            var originalItem = (RegistryTreeItem)tvItems.SelectedNode?.Tag;
+            if (originalItem == null)
+                return;
 
-                        tvItems.SelectedNode.Text = form.Item.Text;
-                        tvItems.SelectedNode.Tag = form.Item;
-                    }
+            using (FrmManageItemForm form = new FrmManageItemForm(originalItem))
+            {
+                if (form.ShowDialog() == DialogResult.OK)
+                {
+                    if (form.Item.ItemScope != originalItem.ItemScope)
+                        DeleteOwnKey(originalItem);
+
+                    SaveItem(form.Item);
+                    RefreshTree(form.Item.Id);
                 }
             }
         }
 
         private void btnRemove_Click(object sender, EventArgs e)
         {
-            if(tvItems.SelectedNode != null)
-            {
-                var item = (RegistryTreeItem)tvItems.SelectedNode.Tag;
-                if (item != null)
-                    RemoveItem(item);
+            var item = (RegistryTreeItem)tvItems.SelectedNode?.Tag;
+            if (item == null)
+                return;
 
-                tvItems.SelectedNode.Remove();
+            List<RegistryTreeItem> allItems = CTRegistryTree.ReadAllItems();
+            Dictionary<Guid, List<RegistryTreeItem>> childrenByParent = CTRegistryTree.GroupByParent(allItems);
+
+            RemoveItemRecursive(item, childrenByParent);
+            RefreshTree(null);
+        }
+
+        private static void RemoveItemRecursive(RegistryTreeItem item, Dictionary<Guid, List<RegistryTreeItem>> childrenByParent)
+        {
+            List<RegistryTreeItem> children;
+            if (childrenByParent.TryGetValue(item.Id, out children))
+            {
+                foreach (var child in children)
+                    RemoveItemRecursive(child, childrenByParent);
             }
+
+            DeleteOwnKey(item);
         }
 
         private void btnExport_Click(object sender, EventArgs e)
@@ -130,13 +169,19 @@ namespace CTRegistryTree
                     var importedItems = RegistryTreeXmlSerializer.Import(xml);
 
                     TreeNode targetNode = tvItems.SelectedNode ?? tvItems.Nodes[0];
-                    string targetPath = ((RegistryTreeItem)targetNode.Tag)?.Path ?? "";
+                    var targetItem = (RegistryTreeItem)targetNode.Tag;
+                    Guid targetParentId = targetItem?.Id ?? Guid.Empty;
 
+                    bool elevated = CTRegistryTree.IsElevated();
+                    Guid? firstImportedId = null;
                     foreach (var imported in importedItems)
-                        targetNode.Nodes.Add(BuildImportedNode(imported, targetPath));
+                    {
+                        var item = BuildImportedItem(imported, targetParentId, elevated);
+                        if (firstImportedId == null)
+                            firstImportedId = item.Id;
+                    }
 
-                    if (!targetNode.IsExpanded)
-                        targetNode.Expand();
+                    RefreshTree(firstImportedId);
                 }
                 catch (Exception exc)
                 {
@@ -145,17 +190,25 @@ namespace CTRegistryTree
             }
         }
 
-        private static TreeNode BuildImportedNode(RegistryTreeImportedItem imported, string parentPath)
+        /// <summary>
+        /// Saves an imported node (and its children) as real items under <paramref name="parentId"/>. A
+        /// LocalMachine-scoped import is silently downgraded to CurrentUser when the process isn't
+        /// elevated, rather than failing the whole import.
+        /// </summary>
+        private static RegistryTreeItem BuildImportedItem(RegistryTreeImportedItem imported, Guid parentId, bool elevated)
         {
             Guid id = Guid.NewGuid();
-            var item = new RegistryTreeItem(id, imported.Text, imported.Action, imported.Command, $"{parentPath}/{id}");
+            RegistryTreeItem.Scope scope = (imported.Scope == RegistryTreeItem.Scope.LocalMachine && elevated)
+                ? RegistryTreeItem.Scope.LocalMachine
+                : RegistryTreeItem.Scope.CurrentUser;
+
+            var item = new RegistryTreeItem(id, imported.Text, imported.Action, imported.Command, parentId, scope);
             SaveItem(item);
 
-            var node = (TreeNode)item;
             foreach (var child in imported.Children)
-                node.Nodes.Add(BuildImportedNode(child, item.Path));
+                BuildImportedItem(child, item.Id, elevated);
 
-            return node;
+            return item;
         }
 
         private static void SaveItem(RegistryTreeItem item)
@@ -163,25 +216,44 @@ namespace CTRegistryTree
             using (var key = (RegistryKey)item) { }
         }
 
-        private static void RemoveItem(RegistryTreeItem item)
+        private static void DeleteOwnKey(RegistryTreeItem item)
         {
-            string relativePath = $"{CTRegistryTree.Items}{item.Path.Replace('/', '\\')}";
-            int lastSeparator = relativePath.LastIndexOf('\\');
-            string parentPath = relativePath.Substring(0, lastSeparator);
-            string keyName = relativePath.Substring(lastSeparator + 1);
-
-            using (var parentKey = Registry.CurrentUser.OpenSubKey($"{CTRegistryTree.ROOT}\\{parentPath}", true))
+            RegistryKey hive = item.ItemScope == RegistryTreeItem.Scope.LocalMachine ? Registry.LocalMachine : Registry.CurrentUser;
+            using (var itemsKey = hive.OpenSubKey($@"{CTRegistryTree.ROOT}\{CTRegistryTree.Items}", true))
             {
-                parentKey?.DeleteSubKeyTree(keyName, false);
+                itemsKey?.DeleteSubKeyTree(item.Id.ToString(), false);
             }
         }
 
         private void tvItems_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            bool hasItem = tvItems.SelectedNode?.Tag is RegistryTreeItem;
-            btnEdit.Enabled = hasItem;
-            btnRemove.Enabled = hasItem;
+            var item = tvItems.SelectedNode?.Tag as RegistryTreeItem;
+            bool hasItem = item != null;
+            bool elevated = CTRegistryTree.IsElevated();
+
+            bool blockedByOwnScope = hasItem && item.ItemScope == RegistryTreeItem.Scope.LocalMachine && !elevated;
+            bool blockedByDescendant = hasItem && !elevated && HasLocalMachineDescendant(tvItems.SelectedNode);
+
+            btnEdit.Enabled = hasItem && !blockedByOwnScope;
+            btnRemove.Enabled = hasItem && !blockedByOwnScope && !blockedByDescendant;
         }
 
+        /// <summary>
+        /// True if any descendant (at any depth) of <paramref name="node"/> is LocalMachine-scoped.
+        /// Used to block deleting a CurrentUser parent while stranding an undeletable LocalMachine child
+        /// when not elevated.
+        /// </summary>
+        private static bool HasLocalMachineDescendant(TreeNode node)
+        {
+            foreach (TreeNode child in node.Nodes)
+            {
+                var childItem = (RegistryTreeItem)child.Tag;
+                if (childItem != null && childItem.ItemScope == RegistryTreeItem.Scope.LocalMachine)
+                    return true;
+                if (HasLocalMachineDescendant(child))
+                    return true;
+            }
+            return false;
+        }
     }
 }
