@@ -80,7 +80,6 @@ namespace CTRegistryTree
                 }
             });
             manageItem.Font = new Font(manageItem.Font.FontFamily, manageItem.Font.Size - 1, manageItem.Font.Style);
-            manageItem.ForeColor = Color.FromArgb(100, 100, 100);
             items.Add(manageItem);
 
             // Zamiast osobnego wiersza z podpisem, cała sekcja tej wtyczki jest oznaczana
