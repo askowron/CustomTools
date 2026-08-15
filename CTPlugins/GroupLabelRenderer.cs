@@ -13,10 +13,15 @@ namespace CTPlugins
     /// recalculates and overwrites its own <c>Padding</c> on every layout pass (every menu
     /// open, since items get rebuilt each time), so anything set on <c>Padding</c> directly
     /// is silently discarded before the menu is shown. The image margin's width, by contrast,
-    /// is a native input to that same layout calculation, so it survives. <see cref="OnRenderImageMargin"/>
-    /// captures the real, framework-computed bounds of that column each paint and suppresses
-    /// its default Office-style gradient, leaving it blank except where <see cref="DrawGroup"/>
-    /// paints a group's label over it.
+    /// is a native input to that same layout calculation, so it survives.
+    /// <see cref="OnRenderImageMargin"/> captures the real, framework-computed bounds of that
+    /// column each paint and suppresses its default Office-style gradient. The label itself is
+    /// drawn twice by design: once for the whole group in <see cref="OnRenderToolStripBackground"/>
+    /// (covers separators, which never repaint themselves individually), and again per row in
+    /// <see cref="OnRenderMenuItemBackground"/> immediately after that item's own highlight —
+    /// <c>ToolStripMenuItem.OnPaint</c> calls <c>DrawMenuItemBackground</c> unconditionally on
+    /// every repaint of that item (hover included), which paints over the whole row including
+    /// the label column, so the label has to be redrawn on top of it every time to survive.
     /// </summary>
     public class GroupLabelRenderer : ToolStripProfessionalRenderer
     {
@@ -34,32 +39,31 @@ namespace CTPlugins
         {
             _marginBounds = e.AffectedBounds;
             // Deliberately do not call base: suppress the default gradient fill so this
-            // column stays blank except where DrawGroup paints a label over it.
+            // column stays blank except where the label is painted over it.
         }
 
         protected override void OnRenderMenuItemBackground(ToolStripItemRenderEventArgs e)
         {
-            // A selected/hovered item's own highlight paints across its full row width,
-            // on top of the background this renderer already drew — including the reserved
-            // label column, erasing that row's slice of the group's rotated text. Clip the
-            // highlight to the area right of the column so the label stays visible on hover.
-            if (!(e.Item.Tag is string label) || string.IsNullOrEmpty(label))
+            string label = e.Item.Tag as string;
+            if (string.IsNullOrEmpty(label))
             {
                 base.OnRenderMenuItemBackground(e);
                 return;
             }
 
             Rectangle itemBounds = e.Item.Bounds;
-            Rectangle allowed = new Rectangle(
-                _marginBounds.Right,
-                itemBounds.Top,
-                System.Math.Max(0, itemBounds.Width - _marginBounds.Right),
-                itemBounds.Height);
+            Rectangle marginSlice = Rectangle.FromLTRB(itemBounds.Left, itemBounds.Top, _marginBounds.Right, itemBounds.Bottom);
 
+            // Keep the highlight itself off the reserved column — cosmetic tidiness, not load
+            // bearing, since the label redraw below repaints on top of it regardless.
+            Rectangle allowed = Rectangle.FromLTRB(marginSlice.Right, itemBounds.Top, itemBounds.Right, itemBounds.Bottom);
             Region oldClip = e.Graphics.Clip;
             e.Graphics.SetClip(allowed);
             base.OnRenderMenuItemBackground(e);
             e.Graphics.Clip = oldClip;
+
+            Rectangle groupBand = FindGroupBand(e.ToolStrip, e.Item, label);
+            DrawLabel(e.Graphics, label, groupBand, marginSlice);
         }
 
         protected override void OnRenderToolStripBackground(ToolStripRenderEventArgs e)
@@ -77,21 +81,77 @@ namespace CTPlugins
                 string label = item.Tag as string;
                 if (label != groupLabel)
                 {
-                    DrawGroup(e.Graphics, groupLabel, groupFirst, groupLast);
+                    DrawFullGroup(e.Graphics, groupLabel, groupFirst, groupLast);
                     groupLabel = label;
                     groupFirst = item;
                 }
                 groupLast = item;
             }
-            DrawGroup(e.Graphics, groupLabel, groupFirst, groupLast);
+            DrawFullGroup(e.Graphics, groupLabel, groupFirst, groupLast);
         }
 
-        private void DrawGroup(Graphics g, string label, ToolStripItem first, ToolStripItem last)
+        /// <summary>
+        /// Finds the contiguous run of visible items sharing <paramref name="item"/>'s tag and
+        /// returns the vertical span (in the margin column) that its rotated label spans, so a
+        /// single row can redraw its own slice positioned identically to the full-group draw.
+        /// </summary>
+        private static Rectangle FindGroupBand(ToolStrip toolStrip, ToolStripItem item, string label)
+        {
+            ToolStripItem first = null;
+            ToolStripItem last = null;
+            bool inGroup = false;
+
+            foreach (ToolStripItem candidate in toolStrip.Items)
+            {
+                if (!candidate.Visible) continue;
+
+                if ((candidate.Tag as string) == label)
+                {
+                    if (first == null) first = candidate;
+                    last = candidate;
+                    if (ReferenceEquals(candidate, item)) inGroup = true;
+                }
+                else if (inGroup)
+                {
+                    break;
+                }
+                else
+                {
+                    first = null;
+                    last = null;
+                }
+            }
+
+            return (first == null || last == null)
+                ? item.Bounds
+                : new Rectangle(0, first.Bounds.Top, 0, last.Bounds.Bottom - first.Bounds.Top);
+        }
+
+        private void DrawFullGroup(Graphics g, string label, ToolStripItem first, ToolStripItem last)
         {
             if (string.IsNullOrEmpty(label) || first == null || last == null)
                 return;
 
             Rectangle band = new Rectangle(_marginBounds.X, first.Bounds.Top, _marginBounds.Width, last.Bounds.Bottom - first.Bounds.Top);
+            DrawLabel(g, label, band, band);
+        }
+
+        /// <summary>
+        /// Paints the label column background and the rotated text for one group, clipped to
+        /// <paramref name="clip"/>. <paramref name="band"/> is the group's full vertical span —
+        /// used to center/rotate the text identically regardless of how much of it is actually
+        /// visible through <paramref name="clip"/>, so a single row's slice lines up seamlessly
+        /// with its neighbors' slices.
+        /// </summary>
+        private void DrawLabel(Graphics g, string label, Rectangle band, Rectangle clip)
+        {
+            if (string.IsNullOrEmpty(label) || band.Height <= 0)
+                return;
+
+            band = new Rectangle(_marginBounds.X, band.Top, _marginBounds.Width, band.Height);
+
+            Region oldClip = g.Clip;
+            g.SetClip(clip);
 
             using (var backBrush = new SolidBrush(LabelBackColor))
                 g.FillRectangle(backBrush, band);
@@ -110,9 +170,6 @@ namespace CTPlugins
                 font = new Font(font.FontFamily, fittedSize, font.Style);
                 size = g.MeasureString(label, font);
             }
-
-            Region oldClip = g.Clip;
-            g.SetClip(band);
 
             GraphicsState state = g.Save();
             g.TranslateTransform(band.Left + band.Width / 2f, band.Top + band.Height / 2f);
