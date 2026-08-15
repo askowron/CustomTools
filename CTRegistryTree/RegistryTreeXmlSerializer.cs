@@ -32,7 +32,8 @@ namespace CTRegistryTree
             var element = new XElement(ItemElementName,
                 new XAttribute("Text", item?.Text ?? string.Empty),
                 new XAttribute("Action", (item?.Action ?? RegistryTreeItem.ActionType.RunCommand).ToString()),
-                new XAttribute("Command", item?.Command ?? string.Empty));
+                new XAttribute("Command", item?.Command ?? string.Empty),
+                new XAttribute("Scope", (item?.ItemScope ?? RegistryTreeItem.Scope.CurrentUser).ToString()));
 
             foreach (TreeNode child in node.Nodes)
                 element.Add(ExportNode(child));
@@ -59,7 +60,12 @@ namespace CTRegistryTree
             if (actionText == null || !Enum.TryParse(actionText, out action) || !Enum.IsDefined(typeof(RegistryTreeItem.ActionType), action))
                 action = RegistryTreeItem.ActionType.RunCommand;
 
-            var imported = new RegistryTreeImportedItem(text, action, command);
+            string scopeText = (string)element.Attribute("Scope");
+            RegistryTreeItem.Scope scope;
+            if (scopeText == null || !Enum.TryParse(scopeText, out scope) || !Enum.IsDefined(typeof(RegistryTreeItem.Scope), scope))
+                scope = RegistryTreeItem.Scope.CurrentUser;
+
+            var imported = new RegistryTreeImportedItem(text, action, command, scope);
             foreach (var childElement in element.Elements(ItemElementName))
                 imported.Children.Add(ImportElement(childElement));
 
@@ -68,7 +74,7 @@ namespace CTRegistryTree
     }
 
     /// <summary>
-    /// A parsed import-file node. Deliberately has no Id or Path yet — both depend on where
+    /// A parsed import-file node. Deliberately has no Id or ParentId yet — both depend on where
     /// in the live tree the caller ends up placing it.
     /// </summary>
     internal sealed class RegistryTreeImportedItem
@@ -76,13 +82,15 @@ namespace CTRegistryTree
         public string Text { get; }
         public RegistryTreeItem.ActionType Action { get; }
         public string Command { get; }
+        public RegistryTreeItem.Scope Scope { get; }
         public List<RegistryTreeImportedItem> Children { get; } = new List<RegistryTreeImportedItem>();
 
-        public RegistryTreeImportedItem(string text, RegistryTreeItem.ActionType action, string command)
+        public RegistryTreeImportedItem(string text, RegistryTreeItem.ActionType action, string command, RegistryTreeItem.Scope scope)
         {
             Text = text;
             Action = action;
             Command = command;
+            Scope = scope;
         }
     }
 }
