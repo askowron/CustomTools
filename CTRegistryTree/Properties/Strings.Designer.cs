@@ -145,6 +145,24 @@ namespace CTRegistryTree.Properties {
             }
         }
 
+        internal static string Label_Scope {
+            get {
+                return ResourceManager.GetString("Label_Scope", resourceCulture);
+            }
+        }
+
+        internal static string Scope_CurrentUser {
+            get {
+                return ResourceManager.GetString("Scope_CurrentUser", resourceCulture);
+            }
+        }
+
+        internal static string Scope_LocalMachine {
+            get {
+                return ResourceManager.GetString("Scope_LocalMachine", resourceCulture);
+            }
+        }
+
         internal static string Button_Import {
             get {
                 return ResourceManager.GetString("Button_Import", resourceCulture);

@@ -60,6 +60,15 @@
   <data name="ActionType_Submenu" xml:space="preserve">
     <value>Podmenu</value>
   </data>
+  <data name="Label_Scope" xml:space="preserve">
+    <value>Zakres</value>
+  </data>
+  <data name="Scope_CurrentUser" xml:space="preserve">
+    <value>Bieżący użytkownik</value>
+  </data>
+  <data name="Scope_LocalMachine" xml:space="preserve">
+    <value>Wszyscy użytkownicy (ten komputer)</value>
+  </data>
   <data name="Button_Import" xml:space="preserve">
     <value>Importuj</value>
   </data>
