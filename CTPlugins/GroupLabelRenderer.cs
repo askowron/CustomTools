@@ -51,19 +51,30 @@ namespace CTPlugins
                 return;
             }
 
-            Rectangle itemBounds = e.Item.Bounds;
-            Rectangle marginSlice = Rectangle.FromLTRB(itemBounds.Left, itemBounds.Top, _marginBounds.Right, itemBounds.Bottom);
+            // e.Graphics is translated so (0,0) is THIS ITEM's own top-left corner — not
+            // toolstrip-relative like ToolStripItem.Bounds (confirmed by the framework's own
+            // OnRenderMenuItemBackground, which builds its fill rect as
+            // "new Rectangle(Point.Empty, item.Size)"). Every rectangle handed to this
+            // Graphics must be in that local space, not e.Item.Bounds' absolute coordinates.
+            Rectangle localBounds = new Rectangle(Point.Empty, e.Item.Size);
+            int marginWidth = System.Math.Min(_marginBounds.Width, localBounds.Width);
+            Rectangle marginSlice = new Rectangle(0, 0, marginWidth, localBounds.Height);
 
             // Keep the highlight itself off the reserved column — cosmetic tidiness, not load
             // bearing, since the label redraw below repaints on top of it regardless.
-            Rectangle allowed = Rectangle.FromLTRB(marginSlice.Right, itemBounds.Top, itemBounds.Right, itemBounds.Bottom);
+            Rectangle allowed = Rectangle.FromLTRB(marginSlice.Right, 0, localBounds.Right, localBounds.Bottom);
             Region oldClip = e.Graphics.Clip;
             e.Graphics.SetClip(allowed);
             base.OnRenderMenuItemBackground(e);
             e.Graphics.Clip = oldClip;
 
+            // FindGroupBand returns toolstrip-absolute Y coordinates (from ToolStripItem.Bounds
+            // of the group's first/last items) — convert to this item's local space by
+            // subtracting its own absolute top before handing it to DrawLabel alongside the
+            // local marginSlice clip.
             Rectangle groupBand = FindGroupBand(e.ToolStrip, e.Item, label);
-            DrawLabel(e.Graphics, label, groupBand, marginSlice);
+            Rectangle localBand = new Rectangle(0, groupBand.Top - e.Item.Bounds.Top, marginWidth, groupBand.Height);
+            DrawLabel(e.Graphics, label, localBand, marginSlice);
         }
 
         protected override void OnRenderToolStripBackground(ToolStripRenderEventArgs e)
