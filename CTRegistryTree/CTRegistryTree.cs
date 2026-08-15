@@ -64,9 +64,8 @@ namespace CTRegistryTree
             items.Add(manageItem);
 
             // Zamiast osobnego wiersza z podpisem, cała sekcja tej wtyczki jest oznaczana
-            // wspólnym Tagiem, który GroupLabelRenderer rysuje jako pionową etykietę z lewej strony.
-            // Reserwacja miejsca na tę etykietę odbywa się na poziomie kontenera (ContextMenuStrip.Padding
-            // w Program.cs), nie tutaj przez Margin — patrz komentarz przy jej ustawieniu.
+            // wspólnym Tagiem, który GroupLabelRenderer rysuje jako pionową etykietę z lewej strony,
+            // w natywnej kolumnie marginesu obrazków (ContextMenuStrip.ShowImageMargin w Program.cs).
             foreach (var item in items)
             {
                 item.Tag = Name;

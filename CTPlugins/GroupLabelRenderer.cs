@@ -8,18 +8,34 @@ namespace CTPlugins
     /// ToolStrip renderer that turns consecutive items sharing the same non-null string
     /// <see cref="ToolStripItem.Tag"/> into a section: a rotated label is drawn in a
     /// reserved left column spanning the group's full height, in place of a plain menu row.
-    /// Plugins opt in by tagging the items they return from <c>GetMenuItems()</c> with
-    /// their display name and giving those items a left <see cref="ToolStripItem.Margin"/>
-    /// of <see cref="DefaultLabelWidth"/> to make room for the label column.
+    /// The reserved column is WinForms' own image margin (<c>ContextMenuStrip.ShowImageMargin
+    /// = true</c>), not a custom <c>Padding</c>/<c>Margin</c> value: <see cref="ToolStripDropDownMenu"/>
+    /// recalculates and overwrites its own <c>Padding</c> on every layout pass (every menu
+    /// open, since items get rebuilt each time), so anything set on <c>Padding</c> directly
+    /// is silently discarded before the menu is shown. The image margin's width, by contrast,
+    /// is a native input to that same layout calculation, so it survives. <see cref="OnRenderImageMargin"/>
+    /// captures the real, framework-computed bounds of that column each paint and suppresses
+    /// its default Office-style gradient, leaving it blank except where <see cref="DrawGroup"/>
+    /// paints a group's label over it.
     /// </summary>
     public class GroupLabelRenderer : ToolStripProfessionalRenderer
     {
         public const int DefaultLabelWidth = 20;
 
-        public int LabelWidth { get; set; } = DefaultLabelWidth;
         public Font LabelFont { get; set; } = new Font("Segoe UI", 9f, FontStyle.Regular);
         public Color LabelColor { get; set; } = Color.DimGray;
         public Color LabelBackColor { get; set; } = Color.FromArgb(235, 235, 235);
+
+        // Fallback for the very first paint, before OnRenderImageMargin has ever run once
+        // to report the framework's real, DPI-scaled margin bounds.
+        private Rectangle _marginBounds = new Rectangle(0, 0, DefaultLabelWidth, 0);
+
+        protected override void OnRenderImageMargin(ToolStripRenderEventArgs e)
+        {
+            _marginBounds = e.AffectedBounds;
+            // Deliberately do not call base: suppress the default gradient fill so this
+            // column stays blank except where DrawGroup paints a label over it.
+        }
 
         protected override void OnRenderToolStripBackground(ToolStripRenderEventArgs e)
         {
@@ -50,7 +66,7 @@ namespace CTPlugins
             if (string.IsNullOrEmpty(label) || first == null || last == null)
                 return;
 
-            Rectangle band = new Rectangle(0, first.Bounds.Top, LabelWidth, last.Bounds.Bottom - first.Bounds.Top);
+            Rectangle band = new Rectangle(_marginBounds.X, first.Bounds.Top, _marginBounds.Width, last.Bounds.Bottom - first.Bounds.Top);
 
             using (var backBrush = new SolidBrush(LabelBackColor))
                 g.FillRectangle(backBrush, band);

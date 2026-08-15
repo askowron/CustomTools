@@ -31,14 +31,15 @@ namespace CustomTools
             // żeby zmiany zapisane przez pluginy (np. w rejestrze) były od razu widoczne.
             List<ICTPlugin> plugins = CTPlugins.CTPlugins.FindPlugins();
             ContextMenuStrip menu = new ContextMenuStrip();
-            menu.ShowImageMargin = false;
+            // ShowImageMargin=true reserves WinForms' native left image-margin column across
+            // the whole menu, which GroupLabelRenderer paints over for grouped items and
+            // leaves blank otherwise (no plugin sets ToolStripItem.Image). This column is the
+            // only reservation mechanism ToolStripDropDownMenu doesn't undo on its own: it
+            // recalculates and overwrites ContextMenuStrip.Padding on every layout pass, and it
+            // shrinks each auto-sized item's own width by ToolStripItem.Margin — both were tried
+            // and both get silently fought by the framework.
+            menu.ShowImageMargin = true;
             menu.Renderer = new GroupLabelRenderer();
-            // Reserve room for GroupLabelRenderer's vertical group-label column on the container
-            // itself (Padding), not per item (Margin) — ToolStripDropDownMenu's auto-sizing shrinks
-            // each auto-sized item's own width by its Margin, which clips content that assumed the
-            // full, unshrunk width (e.g. the submenu expand arrow). Padding grows the container
-            // instead, so items keep their full correct width.
-            menu.Padding = new Padding(GroupLabelRenderer.DefaultLabelWidth, menu.Padding.Top, menu.Padding.Right, menu.Padding.Bottom);
             menu.Opening += (s, e) => RebuildMenu(menu, plugins);
             RebuildMenu(menu, plugins);
 
