@@ -1,20 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+using CTPlugins;
 
 namespace CustomTools
 {
-    public partial class FrmOptions : Form
+    public partial class FrmOptions : FrmTemplateDialog
     {
         public FrmOptions()
         {
             InitializeComponent();
+
+            chkStartWithWindows.Checked = StartupManager.IsEnabled;
+
+            OKClicked += delegate { StartupManager.SetEnabled(chkStartWithWindows.Checked); };
         }
     }
 }
