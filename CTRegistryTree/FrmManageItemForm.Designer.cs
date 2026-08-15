@@ -36,6 +36,10 @@
             this.tbCommand = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
             this.btnTest = new System.Windows.Forms.Button();
+            this.gbScope = new System.Windows.Forms.GroupBox();
+            this.rbLocalMachine = new System.Windows.Forms.RadioButton();
+            this.rbCurrentUser = new System.Windows.Forms.RadioButton();
+            this.gbScope.SuspendLayout();
             this.SuspendLayout();
             // 
             // label2
@@ -113,11 +117,43 @@
             this.btnTest.UseVisualStyleBackColor = true;
             this.btnTest.Click += new System.EventHandler(this.btnTest_Click);
             //
+            // gbScope
+            //
+            this.gbScope.Controls.Add(this.rbLocalMachine);
+            this.gbScope.Controls.Add(this.rbCurrentUser);
+            this.gbScope.Location = new System.Drawing.Point(12, 163);
+            this.gbScope.Name = "gbScope";
+            this.gbScope.Size = new System.Drawing.Size(436, 48);
+            this.gbScope.TabIndex = 10;
+            this.gbScope.TabStop = false;
+            this.gbScope.Text = Properties.Strings.Label_Scope;
+            //
+            // rbCurrentUser
+            //
+            this.rbCurrentUser.AutoSize = true;
+            this.rbCurrentUser.Checked = true;
+            this.rbCurrentUser.Location = new System.Drawing.Point(12, 20);
+            this.rbCurrentUser.Name = "rbCurrentUser";
+            this.rbCurrentUser.TabIndex = 0;
+            this.rbCurrentUser.TabStop = true;
+            this.rbCurrentUser.Text = Properties.Strings.Scope_CurrentUser;
+            this.rbCurrentUser.UseVisualStyleBackColor = true;
+            //
+            // rbLocalMachine
+            //
+            this.rbLocalMachine.AutoSize = true;
+            this.rbLocalMachine.Location = new System.Drawing.Point(180, 20);
+            this.rbLocalMachine.Name = "rbLocalMachine";
+            this.rbLocalMachine.TabIndex = 1;
+            this.rbLocalMachine.Text = Properties.Strings.Scope_LocalMachine;
+            this.rbLocalMachine.UseVisualStyleBackColor = true;
+            //
             // FrmManageItemForm
             //
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(464, 210);
+            this.ClientSize = new System.Drawing.Size(464, 270);
+            this.Controls.Add(this.gbScope);
             this.Controls.Add(this.btnTest);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.tbCommand);
@@ -142,6 +178,9 @@
             this.Controls.SetChildIndex(this.tbCommand, 0);
             this.Controls.SetChildIndex(this.button1, 0);
             this.Controls.SetChildIndex(this.btnTest, 0);
+            this.Controls.SetChildIndex(this.gbScope, 0);
+            this.gbScope.ResumeLayout(false);
+            this.gbScope.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -157,5 +196,8 @@
         private System.Windows.Forms.TextBox tbCommand;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button btnTest;
+        private System.Windows.Forms.GroupBox gbScope;
+        private System.Windows.Forms.RadioButton rbLocalMachine;
+        private System.Windows.Forms.RadioButton rbCurrentUser;
     }
 }
