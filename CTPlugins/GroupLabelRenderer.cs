@@ -51,6 +51,13 @@ namespace CTPlugins
                 return;
             }
 
+            // Let the base renderer draw its full-width highlight/selection border first — a
+            // proper closed rectangle. Clipping it away from the label column (an earlier
+            // attempt) discarded the border's left edge line entirely instead of moving it, so
+            // the box came out open on the left. Painting the label on top afterward covers that
+            // portion cleanly, then a short line re-closes the border at the new boundary.
+            base.OnRenderMenuItemBackground(e);
+
             // e.Graphics is translated so (0,0) is THIS ITEM's own top-left corner — not
             // toolstrip-relative like ToolStripItem.Bounds (confirmed by the framework's own
             // OnRenderMenuItemBackground, which builds its fill rect as
@@ -60,14 +67,6 @@ namespace CTPlugins
             int marginWidth = System.Math.Min(_marginBounds.Width, localBounds.Width);
             Rectangle marginSlice = new Rectangle(0, 0, marginWidth, localBounds.Height);
 
-            // Keep the highlight itself off the reserved column — cosmetic tidiness, not load
-            // bearing, since the label redraw below repaints on top of it regardless.
-            Rectangle allowed = Rectangle.FromLTRB(marginSlice.Right, 0, localBounds.Right, localBounds.Bottom);
-            Region oldClip = e.Graphics.Clip;
-            e.Graphics.SetClip(allowed);
-            base.OnRenderMenuItemBackground(e);
-            e.Graphics.Clip = oldClip;
-
             // FindGroupBand returns toolstrip-absolute Y coordinates (from ToolStripItem.Bounds
             // of the group's first/last items) — convert to this item's local space by
             // subtracting its own absolute top before handing it to DrawLabel alongside the
@@ -75,6 +74,14 @@ namespace CTPlugins
             Rectangle groupBand = FindGroupBand(e.ToolStrip, e.Item, label);
             Rectangle localBand = new Rectangle(0, groupBand.Top - e.Item.Bounds.Top, marginWidth, groupBand.Height);
             DrawLabel(e.Graphics, label, localBand, marginSlice);
+
+            if (e.Item.Selected)
+            {
+                using (var pen = new Pen(ColorTable.MenuItemBorder))
+                {
+                    e.Graphics.DrawLine(pen, marginSlice.Right, 0, marginSlice.Right, localBounds.Height - 1);
+                }
+            }
         }
 
         protected override void OnRenderToolStripBackground(ToolStripRenderEventArgs e)
