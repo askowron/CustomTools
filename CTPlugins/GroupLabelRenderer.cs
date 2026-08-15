@@ -37,6 +37,31 @@ namespace CTPlugins
             // column stays blank except where DrawGroup paints a label over it.
         }
 
+        protected override void OnRenderMenuItemBackground(ToolStripItemRenderEventArgs e)
+        {
+            // A selected/hovered item's own highlight paints across its full row width,
+            // on top of the background this renderer already drew — including the reserved
+            // label column, erasing that row's slice of the group's rotated text. Clip the
+            // highlight to the area right of the column so the label stays visible on hover.
+            if (!(e.Item.Tag is string label) || string.IsNullOrEmpty(label))
+            {
+                base.OnRenderMenuItemBackground(e);
+                return;
+            }
+
+            Rectangle itemBounds = e.Item.Bounds;
+            Rectangle allowed = new Rectangle(
+                _marginBounds.Right,
+                itemBounds.Top,
+                System.Math.Max(0, itemBounds.Width - _marginBounds.Right),
+                itemBounds.Height);
+
+            Region oldClip = e.Graphics.Clip;
+            e.Graphics.SetClip(allowed);
+            base.OnRenderMenuItemBackground(e);
+            e.Graphics.Clip = oldClip;
+        }
+
         protected override void OnRenderToolStripBackground(ToolStripRenderEventArgs e)
         {
             base.OnRenderToolStripBackground(e);
