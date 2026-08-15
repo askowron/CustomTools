@@ -41,8 +41,17 @@ namespace CTRegistryTree
             tvItems_AfterSelect(tvItems, null);
         }
 
-        private static void BuildTreeNodes(Guid parentId, TreeNode parentNode, Dictionary<Guid, List<RegistryTreeItem>> childrenByParent)
+        /// <summary>
+        /// Cycles (including degenerate Id==Guid.Empty cases) are guarded by a visited set threaded
+        /// through the recursion, same approach as <see cref="CTRegistryTree.BuildMenuItems"/> — if an
+        /// item's Id has already been visited on this path, its <see cref="TreeNode"/> is still added
+        /// (so it's visible in the tree) but not recursed into further, preventing infinite recursion.
+        /// </summary>
+        private static void BuildTreeNodes(Guid parentId, TreeNode parentNode, Dictionary<Guid, List<RegistryTreeItem>> childrenByParent, HashSet<Guid> visited = null)
         {
+            if (visited == null)
+                visited = new HashSet<Guid> { Guid.Empty };
+
             List<RegistryTreeItem> children;
             if (!childrenByParent.TryGetValue(parentId, out children))
                 return;
@@ -51,7 +60,15 @@ namespace CTRegistryTree
             {
                 var node = (TreeNode)item;
                 parentNode.Nodes.Add(node);
-                BuildTreeNodes(item.Id, node, childrenByParent);
+
+                // Guard against cycles: only recurse if we haven't visited this item yet
+                if (!visited.Contains(item.Id))
+                {
+                    var newVisited = new HashSet<Guid>(visited);
+                    newVisited.Add(item.Id);
+                    BuildTreeNodes(item.Id, node, childrenByParent, newVisited);
+                }
+                // else: cycle detected; leave this branch unexpanded
             }
         }
 
@@ -124,13 +141,31 @@ namespace CTRegistryTree
             RefreshTree(null);
         }
 
-        private static void RemoveItemRecursive(RegistryTreeItem item, Dictionary<Guid, List<RegistryTreeItem>> childrenByParent)
+        /// <summary>
+        /// Same cycle guard as <see cref="BuildTreeNodes"/>/<see cref="CTRegistryTree.BuildMenuItems"/>:
+        /// a visited set is threaded through the recursion, seeded with <see cref="Guid.Empty"/>, so a
+        /// degenerate Id==Guid.Empty item or a genuine ParentId cycle (A→B→A) can't cause unbounded
+        /// recursion. Only the further recursion into a child is guarded — <see cref="DeleteOwnKey"/> is
+        /// always called for the current node, since deleting a key is safe (and desired) even when it's
+        /// part of a cycle.
+        /// </summary>
+        private static void RemoveItemRecursive(RegistryTreeItem item, Dictionary<Guid, List<RegistryTreeItem>> childrenByParent, HashSet<Guid> visited = null)
         {
+            if (visited == null)
+                visited = new HashSet<Guid> { Guid.Empty };
+
             List<RegistryTreeItem> children;
             if (childrenByParent.TryGetValue(item.Id, out children))
             {
+                var newVisited = new HashSet<Guid>(visited);
+                newVisited.Add(item.Id);
+
+                // Guard against cycles: only recurse into a child we haven't visited yet
                 foreach (var child in children)
-                    RemoveItemRecursive(child, childrenByParent);
+                {
+                    if (!newVisited.Contains(child.Id))
+                        RemoveItemRecursive(child, childrenByParent, newVisited);
+                }
             }
 
             DeleteOwnKey(item);
