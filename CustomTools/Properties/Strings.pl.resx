@@ -21,4 +21,10 @@
   <data name="TrayMenu_Exit" xml:space="preserve">
     <value>Zamknij</value>
   </data>
+  <data name="Options_Title" xml:space="preserve">
+    <value>Opcje</value>
+  </data>
+  <data name="Options_StartWithWindows" xml:space="preserve">
+    <value>Uruchamiaj z systemem Windows</value>
+  </data>
 </root>

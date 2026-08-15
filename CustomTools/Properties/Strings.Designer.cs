@@ -66,5 +66,17 @@ namespace CustomTools.Properties {
                 return ResourceManager.GetString("TrayMenu_Exit", resourceCulture);
             }
         }
+
+        internal static string Options_Title {
+            get {
+                return ResourceManager.GetString("Options_Title", resourceCulture);
+            }
+        }
+
+        internal static string Options_StartWithWindows {
+            get {
+                return ResourceManager.GetString("Options_StartWithWindows", resourceCulture);
+            }
+        }
     }
 }
