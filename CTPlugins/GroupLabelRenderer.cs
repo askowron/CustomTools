@@ -159,7 +159,11 @@ namespace CTPlugins
             if (string.IsNullOrEmpty(label) || band.Height <= 0)
                 return;
 
-            band = new Rectangle(_marginBounds.X, band.Top, _marginBounds.Width, band.Height);
+            // band's X/Width come straight from the caller (already matching its own clip
+            // rectangle exactly) rather than being re-derived from _marginBounds here — the two
+            // callers use different coordinate spaces (toolstrip-absolute vs. item-local), and
+            // re-deriving from a single shared field previously let the two drift by a pixel,
+            // showing up as a hairline seam between the label and the hover highlight next to it.
 
             Region oldClip = g.Clip;
             g.SetClip(clip);
