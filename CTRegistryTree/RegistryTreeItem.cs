@@ -1,5 +1,6 @@
 using Microsoft.Win32;
 using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace CTRegistryTree
@@ -10,15 +11,22 @@ namespace CTRegistryTree
         /// Specifies the type of action to perform, such as running a command, opening a URL, opening a file,
         /// or acting as a pure submenu container with no runnable action.
         /// </summary>
-        /// <remarks>Use <see cref="ActionType"/> to indicate the intended operation in APIs that support
-        /// multiple action types. The values correspond to distinct behaviors and may affect how parameters are
-        /// interpreted or processed.</remarks>
         public enum ActionType
         {
             RunCommand = 1,
             OpenUrl = 2,
             OpenFile = 3,
             Submenu = 4
+        }
+
+        /// <summary>
+        /// Which registry hive an item is stored under: <see cref="CurrentUser"/> (HKCU, always writable)
+        /// or <see cref="LocalMachine"/> (HKLM, write requires an elevated process).
+        /// </summary>
+        public enum Scope
+        {
+            CurrentUser = 1,
+            LocalMachine = 2
         }
 
         /// <summary>
@@ -42,52 +50,44 @@ namespace CTRegistryTree
         public string Command { get; set; }
 
         /// <summary>
-        /// Location of the item within the tree, expressed as "/"-separated <see cref="Id"/> segments
-        /// relative to the plugin's registry root (e.g. "/parentId/childId"). Mirrors the actual registry
-        /// key nesting used to persist the item.
+        /// Id of this item's logical parent, or <see cref="Guid.Empty"/> for a root-level item. Storage is
+        /// flat (one key per item, keyed by its own <see cref="Id"/>), so this is the only thing that
+        /// expresses tree structure — it is not derived from where the key physically lives, since a
+        /// child's <see cref="ItemScope"/> (and therefore hive) can differ from its parent's.
         /// </summary>
-        public string Path;
+        public Guid ParentId { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RegistryTreeItem"/> class with default property values.
+        /// Which hive this item is stored under. Never persisted as its own registry value — always
+        /// derived from the hive a key was actually read from, so it can't drift out of sync.
         /// </summary>
-        /// <remarks>The <see cref="Text"/> property is set to an empty string, <see cref="Action"/> is
-        /// set to <see cref="ActionType.RunCommand"/>, and <see cref="Command"/> is set to an empty string.</remarks>
+        public Scope ItemScope { get; set; }
+
         public RegistryTreeItem()
         {
             Id = Guid.NewGuid();
             Text = string.Empty;
             Action = ActionType.RunCommand;
             Command = string.Empty;
-            Path = "/";
+            ParentId = Guid.Empty;
+            ItemScope = Scope.CurrentUser;
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RegistryTreeItem"/> class with the specified display text,
-        /// action type, and command string.
-        /// </summary>
-        /// <param name="text">The display text for the registry tree item. Cannot be null.</param>
-        /// <param name="action">The action type associated with this item, indicating the operation to perform.</param>
-        /// <param name="command">The command string to execute when the item is activated. Cannot be null.</param>
-        public RegistryTreeItem(Guid guid, string text, ActionType action, string command, string path = "/")
+        public RegistryTreeItem(Guid guid, string text, ActionType action, string command, Guid parentId = default(Guid), Scope scope = Scope.CurrentUser)
         {
             Id = guid;
             Text = text;
             Action = action;
             Command = command;
-            Path = path;
+            ParentId = parentId;
+            ItemScope = scope;
         }
 
         /// <summary>
-        /// Converts a <see cref="RegistryKey"/> instance to a <see cref="RegistryTreeItem"/> by extracting relevant
-        /// values.
+        /// Converts a <see cref="RegistryKey"/> instance to a <see cref="RegistryTreeItem"/>. <see
+        /// cref="ItemScope"/> is inferred from whether <paramref name="key"/>'s full path starts under
+        /// HKEY_LOCAL_MACHINE or HKEY_CURRENT_USER.
         /// </summary>
-        /// <remarks>The "Action" value is interpreted as an <see cref="ActionType"/> if it matches a
-        /// defined value; otherwise, <see cref="ActionType.RunCommand"/> is used. If the "Name" or "Command" values are
-        /// missing, empty strings are used. The item's <see cref="Path"/> is derived from the key's own location
-        /// under the plugin's registry root, so the returned item always reflects where it actually lives.</remarks>
-        /// <param name="key">The registry key containing the values used to initialize the <see cref="RegistryTreeItem"/>. Must not be
-        /// <see langword="null"/>.</param>
         public static explicit operator RegistryTreeItem(RegistryKey key)
         {
             if (key == null) return null;
@@ -107,28 +107,31 @@ namespace CTRegistryTree
                 id = Guid.NewGuid();
             }
 
-            string itemsRoot = $@"HKEY_CURRENT_USER\{CTRegistryTree.ROOT}\{CTRegistryTree.Items}";
-            string path = "/" + key.Name.Substring(itemsRoot.Length).Replace('\\', '/').TrimStart('/');
+            Guid parentId;
+            if (!Guid.TryParse(key.GetValue("ParentId") as string, out parentId))
+            {
+                parentId = Guid.Empty;
+            }
 
-            return new RegistryTreeItem(id, text, action, command, path);
+            Scope scope = key.Name.StartsWith(@"HKEY_LOCAL_MACHINE", StringComparison.OrdinalIgnoreCase)
+                ? Scope.LocalMachine
+                : Scope.CurrentUser;
+
+            return new RegistryTreeItem(id, text, action, command, parentId, scope);
         }
 
         /// <summary>
-        /// Converts the specified <see cref="RegistryTreeItem"/> to a <see cref="Microsoft.Win32.RegistryKey"/>
-        /// instance representing the registry entry for the item.
+        /// Converts the specified <see cref="RegistryTreeItem"/> to a <see cref="RegistryKey"/> under the
+        /// hive matching <see cref="ItemScope"/>, at the flat location <c>Items\{Id}</c> (no nesting).
         /// </summary>
-        /// <remarks>The returned registry key is created under the current user's registry hive, at the
-        /// location described by <see cref="Path"/>. The key's "Id", "Name", "Action" and "Command" values are set
-        /// based on the properties of the <see cref="RegistryTreeItem"/>.</remarks>
-        /// <param name="item">The <see cref="RegistryTreeItem"/> to convert. If <paramref name="item"/> is <see langword="null"/>, the
-        /// operator returns <see langword="null"/>.</param>
         public static explicit operator RegistryKey(RegistryTreeItem item)
         {
             if (item == null) return null;
 
-            string relativePath = item.Path.Replace('/', '\\');
-            var key = Registry.CurrentUser.CreateSubKey($@"{CTRegistryTree.ROOT}\{CTRegistryTree.Items}{relativePath}");
+            RegistryKey hive = item.ItemScope == Scope.LocalMachine ? Registry.LocalMachine : Registry.CurrentUser;
+            var key = hive.CreateSubKey($@"{CTRegistryTree.ROOT}\{CTRegistryTree.Items}\{item.Id}");
             key.SetValue("Id", item.Id.ToString());
+            key.SetValue("ParentId", item.ParentId.ToString());
             key.SetValue("Name", item.Text);
             key.SetValue("Action", (int)item.Action);
             key.SetValue("Command", item.Command);
@@ -139,8 +142,6 @@ namespace CTRegistryTree
         /// Converts a <see cref="TreeNode"/> to a <see cref="RegistryTreeItem"/> if the node's <c>Tag</c> property
         /// contains a <see cref="RegistryTreeItem"/> instance.
         /// </summary>
-        /// <param name="node">The <see cref="TreeNode"/> to convert. The node's <c>Tag</c> property must reference a <see
-        /// cref="RegistryTreeItem"/> instance.</param>
         public static explicit operator RegistryTreeItem(TreeNode node)
         {
             if (node == null || !(node.Tag is RegistryTreeItem)) return null;
@@ -148,16 +149,22 @@ namespace CTRegistryTree
         }
 
         /// <summary>
-        /// Converts a <see cref="RegistryTreeItem"/> instance to a <see cref="TreeNode"/> with its text and tag set
-        /// accordingly.
+        /// Converts a <see cref="RegistryTreeItem"/> instance to a <see cref="TreeNode"/>. LocalMachine
+        /// items get a " (LM)" text suffix and a muted gray color, so mixed-scope siblings stay
+        /// distinguishable in every tree that renders items this way (manage-items tree, import preview).
         /// </summary>
-        /// <param name="item">The <see cref="RegistryTreeItem"/> to convert. If <paramref name="item"/> is <see langword="null"/>, the
-        /// conversion returns <see langword="null"/>.</param>
         public static explicit operator TreeNode(RegistryTreeItem item)
         {
             if (item == null) return null;
-            TreeNode node = new TreeNode(item.Text);
+
+            bool isLocalMachine = item.ItemScope == Scope.LocalMachine;
+            string text = isLocalMachine ? $"{item.Text} (LM)" : item.Text;
+
+            TreeNode node = new TreeNode(text);
             node.Tag = item;
+            if (isLocalMachine)
+                node.ForeColor = Color.FromArgb(100, 100, 100);
+
             return node;
         }
     }
