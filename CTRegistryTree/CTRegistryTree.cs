@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Security.Principal;
 using System.Windows.Forms;
 
 namespace CTRegistryTree
@@ -30,27 +31,46 @@ namespace CTRegistryTree
                 key = Registry.CurrentUser.CreateSubKey(ROOT);
                 key.CreateSubKey(Items);
             }
-
             if (key != null) key.Close();
+
+            if (IsElevated())
+            {
+                var lmKey = Registry.LocalMachine.OpenSubKey(ROOT);
+                if (lmKey == null)
+                {
+                    lmKey = Registry.LocalMachine.CreateSubKey(ROOT);
+                    lmKey.CreateSubKey(Items);
+                }
+                if (lmKey != null) lmKey.Close();
+            }
+        }
+
+        /// <summary>
+        /// True when the current process is running elevated (as Administrator). Writing to HKLM requires
+        /// this; reading from HKLM does not.
+        /// </summary>
+        internal static bool IsElevated()
+        {
+            using (var identity = WindowsIdentity.GetCurrent())
+            {
+                var principal = new WindowsPrincipal(identity);
+                return principal.IsInRole(WindowsBuiltInRole.Administrator);
+            }
         }
 
         public ToolStripItem[] GetMenuItems()
         {
-            return LoadItems($"{ROOT}\\{Items}");
+            return LoadItems();
         }
 
-        protected ToolStripItem[] LoadItems(string root)
+        protected ToolStripItem[] LoadItems()
         {
             List<ToolStripItem> items = new List<ToolStripItem>();
 
-            var rootKey = Registry.CurrentUser.OpenSubKey(root);
-            if (rootKey != null)
-            {
-                using (rootKey)
-                {
-                    items.AddRange(BuildMenuItems(rootKey));
-                }
-            }
+            List<RegistryTreeItem> allItems = ReadAllItems();
+            Dictionary<Guid, List<RegistryTreeItem>> childrenByParent = GroupByParent(allItems);
+
+            items.AddRange(BuildMenuItems(Guid.Empty, childrenByParent));
 
             items.Add(new ToolStripSeparator());
             var manageItem = new ToolStripMenuItem(Properties.Strings.Menu_Manage, null, delegate {
@@ -75,34 +95,103 @@ namespace CTRegistryTree
         }
 
         /// <summary>
-        /// Recursively builds menu items from a registry key: leaf items become clickable menu items that
-        /// execute their action, items with children become submenus, and an item explicitly typed
-        /// <see cref="RegistryTreeItem.ActionType.Submenu"/> with no children renders as a disabled placeholder.
+        /// Reads every item from both HKCU and HKLM (flat, one key per item under Items\{Id}) into a
+        /// single list. Reading HKLM never requires elevation.
         /// </summary>
-        private static IEnumerable<ToolStripItem> BuildMenuItems(RegistryKey parentKey)
+        internal static List<RegistryTreeItem> ReadAllItems()
         {
-            foreach (var subKeyName in parentKey.GetSubKeyNames())
-            {
-                using (var subKey = parentKey.OpenSubKey(subKeyName))
-                {
-                    var item = (RegistryTreeItem)subKey;
-                    bool isContainer = subKey.SubKeyCount > 0 || item.Action == RegistryTreeItem.ActionType.Submenu;
+            var result = new List<RegistryTreeItem>();
+            ReadHiveItems(Registry.CurrentUser, result);
+            ReadHiveItems(Registry.LocalMachine, result);
+            return result;
+        }
 
-                    if (isContainer)
+        private static void ReadHiveItems(RegistryKey hive, List<RegistryTreeItem> result)
+        {
+            using (var itemsKey = hive.OpenSubKey($@"{ROOT}\{Items}"))
+            {
+                if (itemsKey == null) return;
+
+                foreach (var subKeyName in itemsKey.GetSubKeyNames())
+                {
+                    using (var subKey = itemsKey.OpenSubKey(subKeyName))
                     {
-                        var menuItem = new ToolStripMenuItem(item.Text);
-                        if (subKey.SubKeyCount > 0)
-                            menuItem.DropDownItems.AddRange(BuildMenuItems(subKey).ToArray());
-                        else
-                            menuItem.Enabled = false;
-                        yield return menuItem;
+                        result.Add((RegistryTreeItem)subKey);
                     }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Groups items by <see cref="RegistryTreeItem.ParentId"/>. An item whose ParentId doesn't match
+        /// any loaded item's Id (e.g. a dangling reference after a partial delete) is treated as
+        /// root-level rather than dropped. Each group is stably sorted LocalMachine-first.
+        /// </summary>
+        internal static Dictionary<Guid, List<RegistryTreeItem>> GroupByParent(List<RegistryTreeItem> items)
+        {
+            var ids = new HashSet<Guid>();
+            foreach (var item in items) ids.Add(item.Id);
+
+            var map = new Dictionary<Guid, List<RegistryTreeItem>>();
+            foreach (var item in items)
+            {
+                Guid effectiveParent = ids.Contains(item.ParentId) ? item.ParentId : Guid.Empty;
+                List<RegistryTreeItem> list;
+                if (!map.TryGetValue(effectiveParent, out list))
+                {
+                    list = new List<RegistryTreeItem>();
+                    map[effectiveParent] = list;
+                }
+                list.Add(item);
+            }
+
+            foreach (var list in map.Values)
+                SortByScope(list);
+
+            return map;
+        }
+
+        /// <summary>
+        /// Stably reorders so all LocalMachine items come before all CurrentUser items, preserving each
+        /// group's existing relative order (LINQ's OrderBy is a stable sort).
+        /// </summary>
+        internal static void SortByScope(List<RegistryTreeItem> items)
+        {
+            var sorted = items.OrderBy(i => i.ItemScope == RegistryTreeItem.Scope.LocalMachine ? 0 : 1).ToList();
+            items.Clear();
+            items.AddRange(sorted);
+        }
+
+        /// <summary>
+        /// Recursively builds menu items from the in-memory parent/child map: leaf items become clickable
+        /// menu items that execute their action, items with children become submenus, and an item
+        /// explicitly typed <see cref="RegistryTreeItem.ActionType.Submenu"/> with no children renders as
+        /// a disabled placeholder.
+        /// </summary>
+        private static IEnumerable<ToolStripItem> BuildMenuItems(Guid parentId, Dictionary<Guid, List<RegistryTreeItem>> childrenByParent)
+        {
+            List<RegistryTreeItem> children;
+            if (!childrenByParent.TryGetValue(parentId, out children))
+                yield break;
+
+            foreach (var item in children)
+            {
+                bool isContainer = childrenByParent.ContainsKey(item.Id) || item.Action == RegistryTreeItem.ActionType.Submenu;
+
+                if (isContainer)
+                {
+                    var menuItem = new ToolStripMenuItem(item.Text);
+                    if (childrenByParent.ContainsKey(item.Id))
+                        menuItem.DropDownItems.AddRange(BuildMenuItems(item.Id, childrenByParent).ToArray());
                     else
-                    {
-                        var menuItem = new ToolStripMenuItem(item.Text);
-                        menuItem.Click += (s, e) => ExecuteAction(item);
-                        yield return menuItem;
-                    }
+                        menuItem.Enabled = false;
+                    yield return menuItem;
+                }
+                else
+                {
+                    var menuItem = new ToolStripMenuItem(item.Text);
+                    menuItem.Click += (s, e) => ExecuteAction(item);
+                    yield return menuItem;
                 }
             }
         }
