@@ -27,5 +27,3 @@ CustomTools is a Windows system-tray application (`CustomTools/Program.cs`) with
 - **CTRegistryTree** (`Library`) — the one real plugin, and the reference implementation for writing new ones. Persists its menu items under `HKCU\SOFTWARE\Appit\CustomTools\Items` and rebuilds `ToolStripItem[]` from that registry key each time `GetMenuItems()` is called. `RegistryTreeItem` defines explicit conversion operators to/from `RegistryKey` and `TreeNode` to move data between the registry, the model, and the WinForms `TreeView` UI in `FrmManageItemsForm`/`FrmManageItemForm`.
 
 To add a new plugin: create a `Library` project referencing `CTPlugins`, implement `ICTPlugin`, tag the class with `[CustomToolsPlugin(name, version)]`, and set its Debug `OutputPath` to `..\CustomTools\bin\Debug\Plugins\` (matching `CTRegistryTree`'s pattern) so the host discovers it.
-
-Known incomplete areas: the host's "Opcje" menu item is not wired to `FrmOptions` (just shows a placeholder `MessageBox`).

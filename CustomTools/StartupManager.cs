@@ -1,4 +1,5 @@
 using Microsoft.Win32;
+using System;
 using System.Windows.Forms;
 
 namespace CustomTools
@@ -17,7 +18,7 @@ namespace CustomTools
                     if (key == null)
                         return false;
 
-                    return key.GetValue(ValueName) as string == ExePathValue;
+                    return string.Equals(key.GetValue(ValueName) as string, ExePathValue, StringComparison.OrdinalIgnoreCase);
                 }
             }
         }
