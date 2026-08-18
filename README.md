@@ -20,7 +20,9 @@ The app is a thin host built around a plugin contract:
 * **Registry Tree Menu Builder:** build a nested tree of menu items that each run a command, open a URL, open a file, or act as a plain **submenu** container.
 * **Built-in Editor:** a management dialog for the tree — Add, Edit, Remove, and reorder-by-nesting, all in one window.
 * **Import / Export:** back up or share your entire menu tree as an XML file.
-* **Localization:** English and Polish UI out of the box.
+* **Localization:** English, Polish, German, Spanish, and Italian UI, switchable anytime from the Options dialog (or left to follow the OS default) — takes effect immediately, no restart needed.
+* **Options dialog:** toggle "start with Windows" and pick the UI language.
+* **About dialog:** version, author, and license info — the license is viewable in-app (bundled for offline use, refreshed from GitHub automatically when you're online) — plus a link to support the project.
 
 ---
 
@@ -38,7 +40,6 @@ CustomTools is built from source — there are no packaged releases yet.
 
 Planned / incomplete areas:
 
-* **Options dialog:** the tray menu's "Opcje" (Options) entry isn't wired up to a real settings screen yet.
 * **More plugins:** the plugin architecture is ready for more than just the registry-tree menu builder.
 
 ---
