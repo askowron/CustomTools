@@ -120,5 +120,89 @@ namespace CustomTools.Properties {
                 return ResourceManager.GetString("License_Title", resourceCulture);
             }
         }
+
+        internal static string Options_CheckForUpdates {
+            get {
+                return ResourceManager.GetString("Options_CheckForUpdates", resourceCulture);
+            }
+        }
+
+        internal static string Options_CheckNow {
+            get {
+                return ResourceManager.GetString("Options_CheckNow", resourceCulture);
+            }
+        }
+
+        internal static string Options_CheckNow_NoUpdate {
+            get {
+                return ResourceManager.GetString("Options_CheckNow_NoUpdate", resourceCulture);
+            }
+        }
+
+        internal static string Options_CheckNow_Failed {
+            get {
+                return ResourceManager.GetString("Options_CheckNow_Failed", resourceCulture);
+            }
+        }
+
+        internal static string Update_Title {
+            get {
+                return ResourceManager.GetString("Update_Title", resourceCulture);
+            }
+        }
+
+        internal static string Update_CurrentVersion {
+            get {
+                return ResourceManager.GetString("Update_CurrentVersion", resourceCulture);
+            }
+        }
+
+        internal static string Update_NewVersion {
+            get {
+                return ResourceManager.GetString("Update_NewVersion", resourceCulture);
+            }
+        }
+
+        internal static string Update_ReleaseNotes {
+            get {
+                return ResourceManager.GetString("Update_ReleaseNotes", resourceCulture);
+            }
+        }
+
+        internal static string Update_BtnUpdateNow {
+            get {
+                return ResourceManager.GetString("Update_BtnUpdateNow", resourceCulture);
+            }
+        }
+
+        internal static string Update_BtnRemindLater {
+            get {
+                return ResourceManager.GetString("Update_BtnRemindLater", resourceCulture);
+            }
+        }
+
+        internal static string Update_BtnSkip {
+            get {
+                return ResourceManager.GetString("Update_BtnSkip", resourceCulture);
+            }
+        }
+
+        internal static string Update_BalloonTitle {
+            get {
+                return ResourceManager.GetString("Update_BalloonTitle", resourceCulture);
+            }
+        }
+
+        internal static string Update_BalloonText {
+            get {
+                return ResourceManager.GetString("Update_BalloonText", resourceCulture);
+            }
+        }
+
+        internal static string Update_DownloadFailed {
+            get {
+                return ResourceManager.GetString("Update_DownloadFailed", resourceCulture);
+            }
+        }
     }
 }

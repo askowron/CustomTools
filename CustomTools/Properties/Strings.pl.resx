@@ -48,4 +48,46 @@
   <data name="License_Title" xml:space="preserve">
     <value>Licencja</value>
   </data>
+  <data name="Options_CheckForUpdates" xml:space="preserve">
+    <value>Automatycznie sprawdzaj aktualizacje</value>
+  </data>
+  <data name="Options_CheckNow" xml:space="preserve">
+    <value>Sprawdź teraz</value>
+  </data>
+  <data name="Options_CheckNow_NoUpdate" xml:space="preserve">
+    <value>Masz najnowszą wersję.</value>
+  </data>
+  <data name="Options_CheckNow_Failed" xml:space="preserve">
+    <value>Sprawdzanie nie powiodło się. Spróbuj ponownie później.</value>
+  </data>
+  <data name="Update_Title" xml:space="preserve">
+    <value>Dostępna aktualizacja</value>
+  </data>
+  <data name="Update_CurrentVersion" xml:space="preserve">
+    <value>Obecna wersja: {0}</value>
+  </data>
+  <data name="Update_NewVersion" xml:space="preserve">
+    <value>Nowa wersja: {0}</value>
+  </data>
+  <data name="Update_ReleaseNotes" xml:space="preserve">
+    <value>Zobacz informacje o wydaniu</value>
+  </data>
+  <data name="Update_BtnUpdateNow" xml:space="preserve">
+    <value>Zaktualizuj teraz</value>
+  </data>
+  <data name="Update_BtnRemindLater" xml:space="preserve">
+    <value>Przypomnij później</value>
+  </data>
+  <data name="Update_BtnSkip" xml:space="preserve">
+    <value>Pomiń tę wersję</value>
+  </data>
+  <data name="Update_BalloonTitle" xml:space="preserve">
+    <value>Dostępna aktualizacja</value>
+  </data>
+  <data name="Update_BalloonText" xml:space="preserve">
+    <value>Dostępna jest wersja CustomTools {0}. Kliknij, aby zainstalować.</value>
+  </data>
+  <data name="Update_DownloadFailed" xml:space="preserve">
+    <value>Nie udało się pobrać lub uruchomić aktualizacji: {0}</value>
+  </data>
 </root>
