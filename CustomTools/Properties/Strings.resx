@@ -24,4 +24,10 @@
   <data name="Options_StartWithWindows" xml:space="preserve">
     <value>Start with Windows</value>
   </data>
+  <data name="Options_Language" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="Options_Language_SystemDefault" xml:space="preserve">
+    <value>System default</value>
+  </data>
 </root>

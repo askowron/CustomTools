@@ -13,21 +13,21 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="TrayMenu_Options" xml:space="preserve">
-    <value>Opcje</value>
+    <value>Optionen</value>
   </data>
   <data name="TrayMenu_Exit" xml:space="preserve">
-    <value>Zamknij</value>
+    <value>Beenden</value>
   </data>
   <data name="Options_Title" xml:space="preserve">
-    <value>Opcje</value>
+    <value>Optionen</value>
   </data>
   <data name="Options_StartWithWindows" xml:space="preserve">
-    <value>Uruchamiaj z systemem Windows</value>
+    <value>Mit Windows starten</value>
   </data>
   <data name="Options_Language" xml:space="preserve">
-    <value>Język</value>
+    <value>Sprache</value>
   </data>
   <data name="Options_Language_SystemDefault" xml:space="preserve">
-    <value>Domyślny systemowy</value>
+    <value>Systemstandard</value>
   </data>
 </root>

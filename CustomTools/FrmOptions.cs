@@ -1,4 +1,5 @@
 using CTPlugins;
+using System.Linq;
 
 namespace CustomTools
 {
@@ -10,7 +11,19 @@ namespace CustomTools
 
             chkStartWithWindows.Checked = StartupManager.IsEnabled;
 
-            OKClicked += delegate { StartupManager.SetEnabled(chkStartWithWindows.Checked); };
+            string savedLanguageCode = LanguageManager.GetSavedLanguageCode();
+            cmbLanguage.Items.AddRange(LanguageManager.GetSupportedLanguages().Select(l => (object)l).ToArray());
+            cmbLanguage.SelectedIndex = Enumerable.Range(0, cmbLanguage.Items.Count)
+                .FirstOrDefault(i => ((LanguageManager.Language)cmbLanguage.Items[i]).Code == savedLanguageCode);
+
+            OKClicked += delegate
+            {
+                StartupManager.SetEnabled(chkStartWithWindows.Checked);
+
+                string selectedCode = ((LanguageManager.Language)cmbLanguage.SelectedItem).Code;
+                LanguageManager.SetSavedLanguageCode(selectedCode);
+                LanguageManager.Apply(selectedCode);
+            };
         }
     }
 }

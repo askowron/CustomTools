@@ -18,6 +18,8 @@ namespace CustomTools
         [STAThread]
         static void Main()
         {
+            LanguageManager.Apply(LanguageManager.GetSavedLanguageCode());
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
@@ -25,7 +27,7 @@ namespace CustomTools
             NotifyIcon trayIcon = new NotifyIcon();
             trayIcon.Icon = new System.Drawing.Icon(new MemoryStream(Resources.favicon));
             trayIcon.Visible = true;
-            trayIcon.Text = "Custom Tools v0.1";
+            trayIcon.Text = "Custom Tools v0.2";
 
             // Find plugins once, but rebuild the menu contents on every open, so changes
             // plugins persist (e.g. in the registry) show up immediately.

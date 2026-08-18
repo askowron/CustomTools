@@ -72,5 +72,17 @@ namespace CustomTools.Properties {
                 return ResourceManager.GetString("Options_StartWithWindows", resourceCulture);
             }
         }
+
+        internal static string Options_Language {
+            get {
+                return ResourceManager.GetString("Options_Language", resourceCulture);
+            }
+        }
+
+        internal static string Options_Language_SystemDefault {
+            get {
+                return ResourceManager.GetString("Options_Language_SystemDefault", resourceCulture);
+            }
+        }
     }
 }
