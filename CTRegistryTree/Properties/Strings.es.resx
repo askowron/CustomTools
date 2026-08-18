@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Menu_Manage" xml:space="preserve">
+    <value>⚙ Administrar</value>
+  </data>
+  <data name="Tree_Root" xml:space="preserve">
+    <value>Raíz</value>
+  </data>
+  <data name="Form_ManageItems_Title" xml:space="preserve">
+    <value>Administrar elementos</value>
+  </data>
+  <data name="Button_Add" xml:space="preserve">
+    <value>Añadir</value>
+  </data>
+  <data name="Button_Edit" xml:space="preserve">
+    <value>Editar</value>
+  </data>
+  <data name="Button_Remove" xml:space="preserve">
+    <value>Quitar</value>
+  </data>
+  <data name="Form_ManageItem_Title" xml:space="preserve">
+    <value>Añadir / Editar elemento</value>
+  </data>
+  <data name="Label_Text" xml:space="preserve">
+    <value>Texto</value>
+  </data>
+  <data name="Label_Action" xml:space="preserve">
+    <value>Acción</value>
+  </data>
+  <data name="Label_Command" xml:space="preserve">
+    <value>Comando</value>
+  </data>
+  <data name="Button_Find" xml:space="preserve">
+    <value>Buscar</value>
+  </data>
+  <data name="Button_Test" xml:space="preserve">
+    <value>Probar</value>
+  </data>
+  <data name="ActionType_RunCommand" xml:space="preserve">
+    <value>Ejecutar comando</value>
+  </data>
+  <data name="ActionType_OpenUrl" xml:space="preserve">
+    <value>Abrir URL</value>
+  </data>
+  <data name="ActionType_OpenFile" xml:space="preserve">
+    <value>Abrir archivo</value>
+  </data>
+  <data name="ActionType_Submenu" xml:space="preserve">
+    <value>Submenú</value>
+  </data>
+  <data name="Label_Scope" xml:space="preserve">
+    <value>Ámbito</value>
+  </data>
+  <data name="Scope_CurrentUser" xml:space="preserve">
+    <value>Usuario actual</value>
+  </data>
+  <data name="Scope_LocalMachine" xml:space="preserve">
+    <value>Todos los usuarios (este equipo)</value>
+  </data>
+  <data name="Button_Import" xml:space="preserve">
+    <value>Importar</value>
+  </data>
+  <data name="Button_Export" xml:space="preserve">
+    <value>Exportar</value>
+  </data>
+  <data name="Dialog_XmlFilter" xml:space="preserve">
+    <value>Archivos XML (*.xml)|*.xml</value>
+  </data>
+  <data name="Error_ImportFailed" xml:space="preserve">
+    <value>No se pudieron importar los elementos: {0}</value>
+  </data>
+  <data name="Error_ExportFailed" xml:space="preserve">
+    <value>No se pudieron exportar los elementos: {0}</value>
+  </data>
+</root>
