@@ -12,11 +12,13 @@ The app is a thin host built around a plugin contract:
 * **CTPlugins** — the shared contract. A plugin is any class tagged `[CustomToolsPlugin(name, version)]` that implements `ICTPlugin`; the host never references a plugin implementation directly.
 * **CTRegistryTree** — the reference plugin, and the one that ships today. It lets you build a nested tree of custom menu items, persisted under `HKCU\SOFTWARE\Appit\CustomTools\Items`.
 
+Want to write your own? See **[PLUGINS.md](PLUGINS.md)** for a step-by-step guide.
+
 ---
 
 ## ✨ Key Features
 
-* **Plugin Architecture:** drop a DLL implementing `ICTPlugin` into `Plugins/` and it's picked up automatically — no registration list to edit.
+* **Plugin Architecture:** drop a DLL implementing `ICTPlugin` into `Plugins/` and it's picked up automatically — no registration list to edit. See **[PLUGINS.md](PLUGINS.md)** for how to write your own.
 * **Registry Tree Menu Builder:** build a nested tree of menu items that each run a command, open a URL, open a file, or act as a plain **submenu** container.
 * **Built-in Editor:** a management dialog for the tree — Add, Edit, Remove, and reorder-by-nesting, all in one window.
 * **Import / Export:** back up or share your entire menu tree as an XML file.
