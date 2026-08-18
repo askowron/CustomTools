@@ -76,6 +76,13 @@ namespace CustomTools
                     form.ShowDialog();
                 }
             });
+            menu.Items.Add(Strings.TrayMenu_About, null, (s, e) =>
+            {
+                using (FrmAbout form = new FrmAbout())
+                {
+                    form.ShowDialog();
+                }
+            });
             menu.Items.Add(new ToolStripSeparator());
             menu.Items.Add(Strings.TrayMenu_Exit, null, (s, e) => Application.Exit());
         }

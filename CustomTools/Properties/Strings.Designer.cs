@@ -84,5 +84,41 @@ namespace CustomTools.Properties {
                 return ResourceManager.GetString("Options_Language_SystemDefault", resourceCulture);
             }
         }
+
+        internal static string TrayMenu_About {
+            get {
+                return ResourceManager.GetString("TrayMenu_About", resourceCulture);
+            }
+        }
+
+        internal static string About_Title {
+            get {
+                return ResourceManager.GetString("About_Title", resourceCulture);
+            }
+        }
+
+        internal static string About_Version {
+            get {
+                return ResourceManager.GetString("About_Version", resourceCulture);
+            }
+        }
+
+        internal static string About_Author {
+            get {
+                return ResourceManager.GetString("About_Author", resourceCulture);
+            }
+        }
+
+        internal static string About_License {
+            get {
+                return ResourceManager.GetString("About_License", resourceCulture);
+            }
+        }
+
+        internal static string License_Title {
+            get {
+                return ResourceManager.GetString("License_Title", resourceCulture);
+            }
+        }
     }
 }

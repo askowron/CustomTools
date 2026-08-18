@@ -69,5 +69,14 @@ namespace CustomTools.Properties {
                 return ((byte[])(obj));
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized resource of type System.String.
+        /// </summary>
+        internal static string LicenseRtf {
+            get {
+                return ResourceManager.GetString("LicenseRtf", resourceCulture);
+            }
+        }
     }
 }

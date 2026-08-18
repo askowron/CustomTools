@@ -30,4 +30,22 @@
   <data name="Options_Language_SystemDefault" xml:space="preserve">
     <value>Predefinito di sistema</value>
   </data>
+  <data name="TrayMenu_About" xml:space="preserve">
+    <value>Informazioni</value>
+  </data>
+  <data name="About_Title" xml:space="preserve">
+    <value>Informazioni su CustomTools</value>
+  </data>
+  <data name="About_Version" xml:space="preserve">
+    <value>Versione {0}</value>
+  </data>
+  <data name="About_Author" xml:space="preserve">
+    <value>Autore:</value>
+  </data>
+  <data name="About_License" xml:space="preserve">
+    <value>Licenza:</value>
+  </data>
+  <data name="License_Title" xml:space="preserve">
+    <value>Licenza</value>
+  </data>
 </root>
