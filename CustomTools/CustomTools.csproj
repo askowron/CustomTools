@@ -71,6 +71,12 @@
     <Compile Include="FrmOptions.Designer.cs">
       <DependentUpon>FrmOptions.cs</DependentUpon>
     </Compile>
+    <Compile Include="FrmUpdateAvailable.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmUpdateAvailable.Designer.cs">
+      <DependentUpon>FrmUpdateAvailable.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="StartupManager.cs" />
     <Compile Include="UpdateChecker.cs" />
