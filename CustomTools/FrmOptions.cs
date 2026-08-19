@@ -38,14 +38,21 @@ namespace CustomTools
             btnCheckNow.Enabled = false;
             lblCheckNowStatus.Text = "";
 
-            bool? found = await UpdateChecker.CheckNowAsync(_trayIcon);
+            try
+            {
+                bool? found = await UpdateChecker.CheckNowAsync(_trayIcon);
 
-            if (found == null)
-                lblCheckNowStatus.Text = Properties.Strings.Options_CheckNow_Failed;
-            else if (found == false)
-                lblCheckNowStatus.Text = Properties.Strings.Options_CheckNow_NoUpdate;
-
-            btnCheckNow.Enabled = true;
+                if (found == null)
+                    lblCheckNowStatus.Text = Properties.Strings.Options_CheckNow_Failed;
+                else if (found == false)
+                    lblCheckNowStatus.Text = Properties.Strings.Options_CheckNow_NoUpdate;
+            }
+            finally
+            {
+                // Defense in depth: even if CheckNowAsync ever threw, the button must not
+                // stay permanently disabled.
+                btnCheckNow.Enabled = true;
+            }
         }
     }
 }

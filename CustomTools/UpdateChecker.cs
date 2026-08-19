@@ -20,7 +20,7 @@ namespace CustomTools
         private const string SetupAssetName = "CustomToolsSetup.exe";
         private static readonly TimeSpan CheckInterval = TimeSpan.FromHours(24);
 
-        private static System.Threading.Timer _timer;
+        private static System.Windows.Forms.Timer _timer;
 
         public static string AvailableVersion { get; private set; }
         public static string AvailableDownloadUrl { get; private set; }
@@ -89,7 +89,17 @@ namespace CustomTools
         public static void StartBackgroundChecking(NotifyIcon trayIcon)
         {
             _ = CheckIfDueAsync(trayIcon);
-            _timer = new System.Threading.Timer(_ => { var ignored = CheckIfDueAsync(trayIcon); }, null, CheckInterval, CheckInterval);
+
+            // System.Windows.Forms.Timer fires its Tick event on the UI thread (via the
+            // message loop), unlike System.Threading.Timer whose callback runs on a
+            // thread-pool thread with no SynchronizationContext. That matters here because
+            // CheckIfDueAsync/CheckAsync touch the NotifyIcon (not thread-safe cross-thread)
+            // and resolve localized Strings.* under the current UI culture, which is only
+            // set correctly on the UI thread.
+            _timer = new System.Windows.Forms.Timer();
+            _timer.Interval = (int)CheckInterval.TotalMilliseconds;
+            _timer.Tick += (s, e) => { var ignored = CheckIfDueAsync(trayIcon); };
+            _timer.Start();
         }
 
         public static Task<bool?> CheckNowAsync(NotifyIcon trayIcon)
@@ -181,7 +191,15 @@ namespace CustomTools
             }
             finally
             {
-                LastCheckUtc = DateTime.UtcNow;
+                try
+                {
+                    LastCheckUtc = DateTime.UtcNow;
+                }
+                catch
+                {
+                    // Swallow: a registry-write failure during cleanup must not escape
+                    // CheckAsync either, since callers rely on this method never throwing.
+                }
             }
         }
 

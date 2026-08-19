@@ -61,6 +61,7 @@ namespace CustomTools
                 : new CultureInfo(code);
 
             Thread.CurrentThread.CurrentUICulture = culture;
+            CultureInfo.DefaultThreadCurrentUICulture = culture;
         }
     }
 }

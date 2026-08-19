@@ -13,18 +13,21 @@ namespace CustomTools
 {
     internal static class Program
     {
+        // Held for the whole process lifetime purely so the Setup.exe installer's
+        // AppMutex check can detect a running instance and close/relaunch it during
+        // an update. Stored as a static field (rather than a local variable kept
+        // alive with GC.KeepAlive) so it stays rooted for as long as the process
+        // runs and is never eligible for collection during the (potentially
+        // multi-day) Application.Run() call below.
+        private static Mutex appMutex;
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
         static void Main()
         {
-            // Held for the whole process lifetime purely so the Setup.exe installer's
-            // AppMutex check can detect a running instance and close/relaunch it during
-            // an update. GC.KeepAlive right before Application.Run() prevents an
-            // optimizing JIT from finalizing (and releasing) this early, since the
-            // variable is otherwise never read again after this point.
-            Mutex appMutex = new Mutex(initiallyOwned: false, "CustomToolsSingleInstance");
+            appMutex = new Mutex(initiallyOwned: false, "CustomToolsSingleInstance");
 
             LanguageManager.Apply(LanguageManager.GetSavedLanguageCode());
 
@@ -67,8 +70,6 @@ namespace CustomTools
             };
 
             UpdateChecker.StartBackgroundChecking(trayIcon);
-
-            GC.KeepAlive(appMutex);
 
             // Run the application loop with no window
             Application.Run();

@@ -86,17 +86,17 @@ namespace CustomTools
             //
             // lblCheckNowStatus
             //
-            this.lblCheckNowStatus.AutoSize = true;
-            this.lblCheckNowStatus.Location = new System.Drawing.Point(120, 130);
+            this.lblCheckNowStatus.AutoSize = false;
+            this.lblCheckNowStatus.Location = new System.Drawing.Point(12, 152);
             this.lblCheckNowStatus.Name = "lblCheckNowStatus";
-            this.lblCheckNowStatus.Size = new System.Drawing.Size(0, 13);
+            this.lblCheckNowStatus.Size = new System.Drawing.Size(256, 32);
             this.lblCheckNowStatus.TabIndex = 5;
             //
             // FrmOptions
             //
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(280, 200);
+            this.ClientSize = new System.Drawing.Size(280, 238);
             this.Controls.Add(this.lblCheckNowStatus);
             this.Controls.Add(this.btnCheckNow);
             this.Controls.Add(this.chkCheckForUpdates);
