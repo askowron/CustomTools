@@ -55,4 +55,14 @@ open("CustomTools/Resources/License.rtf", "w", encoding="ascii", newline="\r\n")
 
 Also bump `AssemblyInformationalVersion` in all three `AssemblyInfo.cs` files and the tray tooltip string in `Program.cs`.
 
+Once the version is bumped and committed, publish the release by tagging and
+pushing: `git tag vX.Y && git push --tags`. This triggers
+`.github/workflows/release.yml`, which builds the Release configuration,
+compiles `installer/CustomTools.iss` with Inno Setup, and publishes a GitHub
+Release for that tag with `CustomToolsSetup.exe` attached — this is the exact
+asset name and tag format `CustomTools/UpdateChecker.cs` looks for when
+checking for updates. The workflow does not verify the tag matches
+`AssemblyInformationalVersion` in the three `AssemblyInfo.cs` files — keeping
+them in sync is a manual step.
+
 Repo: `github.com/askowron/CustomTools`, license GPL-3.0. Default branch is `master`, not `main` — GitHub blob URLs must use `.../blob/master/...`.
