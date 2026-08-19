@@ -29,6 +29,7 @@ x86/
 bld/
 [Bb]in/
 [Oo]bj/
+installer/Output/
 [Oo]ut/
 [Ll]og/
 [Ll]ogs/
