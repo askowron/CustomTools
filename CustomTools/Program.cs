@@ -51,8 +51,8 @@ namespace CustomTools
             // and both get silently fought by the framework.
             menu.ShowImageMargin = true;
             menu.Renderer = new GroupLabelRenderer();
-            menu.Opening += (s, e) => RebuildMenu(menu, plugins);
-            RebuildMenu(menu, plugins);
+            menu.Opening += (s, e) => RebuildMenu(menu, plugins, trayIcon);
+            RebuildMenu(menu, plugins, trayIcon);
 
             // Attach the menu to the icon
             trayIcon.ContextMenuStrip = menu;
@@ -74,7 +74,7 @@ namespace CustomTools
             Application.Run();
         }
 
-        private static void RebuildMenu(ContextMenuStrip menu, List<ICTPlugin> plugins)
+        private static void RebuildMenu(ContextMenuStrip menu, List<ICTPlugin> plugins, NotifyIcon trayIcon)
         {
             menu.Items.Clear();
             foreach (ICTPlugin plugin in plugins)
@@ -84,7 +84,7 @@ namespace CustomTools
             menu.Items.Add(new ToolStripSeparator());
             menu.Items.Add(Strings.TrayMenu_Options, null, (s, e) =>
             {
-                using (FrmOptions form = new FrmOptions())
+                using (FrmOptions form = new FrmOptions(trayIcon))
                 {
                     form.ShowDialog();
                 }
