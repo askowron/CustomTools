@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -13,22 +12,12 @@ namespace CustomTools
 {
     internal static class Program
     {
-        // Held for the whole process lifetime purely so the Setup.exe installer's
-        // AppMutex check can detect a running instance and close/relaunch it during
-        // an update. Stored as a static field (rather than a local variable kept
-        // alive with GC.KeepAlive) so it stays rooted for as long as the process
-        // runs and is never eligible for collection during the (potentially
-        // multi-day) Application.Run() call below.
-        private static Mutex appMutex;
-
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
         static void Main()
         {
-            appMutex = new Mutex(initiallyOwned: false, "CustomToolsSingleInstance");
-
             LanguageManager.Apply(LanguageManager.GetSavedLanguageCode());
 
             Application.EnableVisualStyles();
@@ -38,7 +27,7 @@ namespace CustomTools
             NotifyIcon trayIcon = new NotifyIcon();
             trayIcon.Icon = new System.Drawing.Icon(new MemoryStream(Resources.favicon));
             trayIcon.Visible = true;
-            trayIcon.Text = "Custom Tools v0.3";
+            trayIcon.Text = "Custom Tools v0.4";
             trayIcon.BalloonTipClicked += (s, e) => new FrmUpdateAvailable().Show();
 
             // Find plugins once, but rebuild the menu contents on every open, so changes

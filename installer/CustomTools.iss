@@ -30,7 +30,11 @@ DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
 PrivilegesRequired=admin
 ArchitecturesInstallIn64BitMode=x64compatible
-AppMutex=CustomToolsSingleInstance
+; No AppMutex: that check shows a blocking "please close it, click OK" dialog
+; that is NOT satisfied by /SUPPRESSMSGBOXES (it defaults to Cancel -> abort)
+; and is unrelated to CloseApplications/RestartApplications below, which use
+; Restart Manager to detect CustomTools.exe locking its own file in {app}
+; and close/relaunch it silently - that alone is enough for a running-app update.
 CloseApplications=yes
 RestartApplications=yes
 OutputDir=Output

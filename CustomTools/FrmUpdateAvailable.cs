@@ -41,18 +41,20 @@ namespace CustomTools
             try
             {
                 string installerPath = await DownloadInstallerAsync(UpdateChecker.AvailableDownloadUrl);
+                string logPath = Path.Combine(Path.GetTempPath(), "CustomToolsUpdate.log");
 
                 var startInfo = new ProcessStartInfo
                 {
                     FileName = installerPath,
-                    Arguments = "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /CLOSEAPPLICATIONS /RESTARTAPPLICATIONS",
+                    Arguments = $"/LOG=\"{logPath}\" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /CLOSEAPPLICATIONS /RESTARTAPPLICATIONS",
                     UseShellExecute = true,
                     Verb = "runas"
                 };
                 Process.Start(startInfo);
 
-                // The installer detects this running instance via AppMutex, closes it,
-                // and relaunches it after install — no Application.Exit() call here,
+                // CloseApplications/RestartApplications in the .iss detect this running
+                // instance via Restart Manager (it locks its own .exe in {app}), close it,
+                // and relaunch it after install — no Application.Exit() call here,
                 // that would race the installer's own detection.
                 Close();
             }
