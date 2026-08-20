@@ -142,7 +142,9 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="CompileInstaller" AfterTargets="Build" Condition=" '$(Configuration)' == 'Release' ">
     <PropertyGroup>
-      <IsccPath Condition="Exists('C:\Program Files (x86)\Inno Setup 6\ISCC.exe')">C:\Program Files (x86)\Inno Setup 6\ISCC.exe</IsccPath>
+      <IsccPath Condition="Exists('C:\Program Files\Inno Setup 7\ISCC.exe')">C:\Program Files\Inno Setup 7\ISCC.exe</IsccPath>
+      <IsccPath Condition=" '$(IsccPath)' == '' AND Exists('C:\Program Files (x86)\Inno Setup 7\ISCC.exe') ">C:\Program Files (x86)\Inno Setup 7\ISCC.exe</IsccPath>
+      <IsccPath Condition=" '$(IsccPath)' == '' AND Exists('C:\Program Files (x86)\Inno Setup 6\ISCC.exe') ">C:\Program Files (x86)\Inno Setup 6\ISCC.exe</IsccPath>
       <IsccPath Condition=" '$(IsccPath)' == '' AND Exists('C:\Program Files\Inno Setup 6\ISCC.exe') ">C:\Program Files\Inno Setup 6\ISCC.exe</IsccPath>
     </PropertyGroup>
     <Exec Command="&quot;$(IsccPath)&quot; &quot;$(MSBuildProjectDirectory)\..\installer\CustomTools.iss&quot;" Condition=" '$(IsccPath)' != '' " />
