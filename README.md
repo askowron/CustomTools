@@ -23,15 +23,17 @@ Want to write your own? See **[PLUGINS.md](PLUGINS.md)** for a step-by-step guid
 * **Built-in Editor:** a management dialog for the tree — Add, Edit, Remove, and reorder-by-nesting, all in one window.
 * **Import / Export:** back up or share your entire menu tree as an XML file.
 * **Localization:** English, Polish, German, Spanish, and Italian UI, switchable anytime from the Options dialog (or left to follow the OS default) — takes effect immediately, no restart needed.
-* **Options dialog:** toggle "start with Windows" and pick the UI language.
+* **Options dialog:** toggle "start with Windows", pick the UI language, and enable/disable automatic update checks.
 * **About dialog:** version, author, and license info — the license is viewable in-app (bundled for offline use, refreshed from GitHub automatically when you're online) — plus a link to support the project.
+* **Auto-Update:** checks GitHub for a newer release on startup and once a day (on by default, toggle it off in Options). When one's found, a tray notification lets you install it, remind you later, or skip that version — no manual downloading.
 
 ---
 
 ## 🛠️ Installation & Requirements
 
-CustomTools is built from source — there are no packaged releases yet.
+**Option A — Installer (recommended):** download the latest `CustomToolsSetup.exe` from the [Releases page](https://github.com/askowron/CustomTools/releases), run it, and CustomTools installs to Program Files with a Start Menu shortcut. Requires .NET Framework 4.8 (preinstalled on modern Windows). From then on the app checks for updates automatically.
 
+**Option B — Build from source:**
 1. Clone the repo and open `CustomTools.slnx` in Visual Studio (or build with MSBuild directly: `msbuild CustomTools.slnx /p:Configuration=Debug`).
 2. Requires .NET Framework 4.8.
 3. Run `CustomTools.exe` — the built `CTRegistryTree` plugin is picked up automatically from the `Plugins/` folder next to it.
