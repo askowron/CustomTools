@@ -29,6 +29,7 @@ DefaultDirName={autopf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
 PrivilegesRequired=admin
+ArchitecturesInstallIn64BitMode=x64compatible
 AppMutex=CustomToolsSingleInstance
 CloseApplications=yes
 RestartApplications=yes
