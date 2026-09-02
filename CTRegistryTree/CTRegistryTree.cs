@@ -255,6 +255,31 @@ namespace CTRegistryTree
                 }
             }
 
+            // Unquoted paths can themselves contain spaces (e.g. "C:\My Folder\app.exe"), so before
+            // naively splitting at the first space, probe progressively longer prefixes (up to each
+            // space, then the whole string) for a real file -- the same fallback CreateProcess itself
+            // uses to resolve unquoted command lines.
+            int searchFrom = 0;
+            while (true)
+            {
+                int spaceIndex = command.IndexOf(' ', searchFrom);
+                string candidate = spaceIndex < 0 ? command : command.Substring(0, spaceIndex);
+
+                if (System.IO.File.Exists(candidate))
+                {
+                    fileName = candidate;
+                    arguments = spaceIndex < 0 ? string.Empty : command.Substring(spaceIndex + 1).Trim();
+                    return;
+                }
+
+                if (spaceIndex < 0)
+                {
+                    break;
+                }
+
+                searchFrom = spaceIndex + 1;
+            }
+
             int firstSpace = command.IndexOf(' ');
             if (firstSpace < 0)
             {
