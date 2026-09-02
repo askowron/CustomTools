@@ -27,7 +27,7 @@ namespace CustomTools
             NotifyIcon trayIcon = new NotifyIcon();
             trayIcon.Icon = new System.Drawing.Icon(new MemoryStream(Resources.favicon));
             trayIcon.Visible = true;
-            trayIcon.Text = "Custom Tools v0.4";
+            trayIcon.Text = "Custom Tools v0.5";
             trayIcon.BalloonTipClicked += (s, e) => new FrmUpdateAvailable().Show();
 
             // Find plugins once, but rebuild the menu contents on every open, so changes
