@@ -46,7 +46,7 @@ namespace CustomTools
                 var startInfo = new ProcessStartInfo
                 {
                     FileName = installerPath,
-                    Arguments = $"/LOG=\"{logPath}\" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /CLOSEAPPLICATIONS /RESTARTAPPLICATIONS",
+                    Arguments = $"/LOG=\"{logPath}\" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /CLOSEAPPLICATIONS /FORCECLOSEAPPLICATIONS /RESTARTAPPLICATIONS",
                     UseShellExecute = true,
                     Verb = "runas"
                 };
@@ -56,6 +56,13 @@ namespace CustomTools
                 // instance via Restart Manager (it locks its own .exe in {app}), close it,
                 // and relaunch it after install — no Application.Exit() call here,
                 // that would race the installer's own detection.
+                //
+                // /FORCECLOSEAPPLICATIONS is required: this app has no top-level form and
+                // never handles WM_QUERYENDSESSION/WM_ENDSESSION, so Restart Manager's polite
+                // close request is simply ignored and the process keeps running. Without the
+                // force flag that shows up as Restart Manager event 10006 ("cannot close
+                // application"), the exe stays locked, and the whole /VERYSILENT install
+                // aborts with no visible error (/SUPPRESSMSGBOXES swallows the "in use" prompt).
                 Close();
             }
             catch (Exception ex)
