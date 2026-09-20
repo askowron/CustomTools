@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -12,12 +13,23 @@ namespace CustomTools
 {
     internal static class Program
     {
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
+        private static extern int RegisterApplicationRestart(string commandLine, int flags);
+
+        // RESTART_NO_CRASH | RESTART_NO_HANG | RESTART_NO_REBOOT: only relaunch when Restart
+        // Manager shuts us down for a patch (i.e. the Inno Setup self-update).
+        private const int RestartOnlyForPatch = 1 | 2 | 8;
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
         static void Main()
         {
+            // Inno Setup's RestartApplications only relaunches apps that registered here; without
+            // it the installer force-closes us during an update and never starts us again.
+            RegisterApplicationRestart(null, RestartOnlyForPatch);
+
             LanguageManager.Apply(LanguageManager.GetSavedLanguageCode());
 
             Application.EnableVisualStyles();
@@ -27,7 +39,7 @@ namespace CustomTools
             NotifyIcon trayIcon = new NotifyIcon();
             trayIcon.Icon = new System.Drawing.Icon(new MemoryStream(Resources.favicon));
             trayIcon.Visible = true;
-            trayIcon.Text = "Custom Tools v0.7";
+            trayIcon.Text = "Custom Tools v0.8";
             trayIcon.BalloonTipClicked += (s, e) => new FrmUpdateAvailable().Show();
 
             // Find plugins once, but rebuild the menu contents on every open, so changes
