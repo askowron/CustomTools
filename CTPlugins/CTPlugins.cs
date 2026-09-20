@@ -12,10 +12,12 @@ namespace CTPlugins
         public static List<ICTPlugin> FindPlugins()
         {
             var plugins = new List<ICTPlugin>();
-            if (!Directory.Exists("Plugins")) 
-                Directory.CreateDirectory("Plugins");
-
+            // Resolve against the EXE's directory, not the current directory: autostart from the
+            // Run key launches with cwd = System32, where creating "Plugins" throws.
             string pluginFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins");
+            if (!Directory.Exists(pluginFolder))
+                Directory.CreateDirectory(pluginFolder);
+
             foreach (string filePath in Directory.EnumerateFiles(pluginFolder, "*.dll"))
             {
                 try
