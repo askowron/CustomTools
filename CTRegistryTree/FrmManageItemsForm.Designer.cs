@@ -42,6 +42,8 @@
             this.tvItems.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.tvItems.HideSelection = false;
+            this.tvItems.ShowLines = false;
             this.tvItems.Location = new System.Drawing.Point(12, 12);
             this.tvItems.Name = "tvItems";
             treeNode1.Name = "Root";
@@ -57,7 +59,7 @@
             this.btnAdd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnAdd.Location = new System.Drawing.Point(296, 12);
             this.btnAdd.Name = "btnAdd";
-            this.btnAdd.Size = new System.Drawing.Size(75, 23);
+            this.btnAdd.Size = new System.Drawing.Size(75, 28);
             this.btnAdd.TabIndex = 1;
             this.btnAdd.Text = Properties.Strings.Button_Add;
             this.btnAdd.UseVisualStyleBackColor = true;
@@ -67,9 +69,9 @@
             // 
             this.btnEdit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnEdit.Enabled = false;
-            this.btnEdit.Location = new System.Drawing.Point(296, 41);
+            this.btnEdit.Location = new System.Drawing.Point(296, 46);
             this.btnEdit.Name = "btnEdit";
-            this.btnEdit.Size = new System.Drawing.Size(75, 23);
+            this.btnEdit.Size = new System.Drawing.Size(75, 28);
             this.btnEdit.TabIndex = 2;
             this.btnEdit.Text = Properties.Strings.Button_Edit;
             this.btnEdit.UseVisualStyleBackColor = true;
@@ -79,9 +81,9 @@
             // 
             this.btnRemove.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnRemove.Enabled = false;
-            this.btnRemove.Location = new System.Drawing.Point(296, 70);
+            this.btnRemove.Location = new System.Drawing.Point(296, 80);
             this.btnRemove.Name = "btnRemove";
-            this.btnRemove.Size = new System.Drawing.Size(75, 23);
+            this.btnRemove.Size = new System.Drawing.Size(75, 28);
             this.btnRemove.TabIndex = 3;
             this.btnRemove.Text = Properties.Strings.Button_Remove;
             this.btnRemove.UseVisualStyleBackColor = true;
@@ -90,9 +92,9 @@
             // btnExport
             //
             this.btnExport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnExport.Location = new System.Drawing.Point(296, 99);
+            this.btnExport.Location = new System.Drawing.Point(296, 114);
             this.btnExport.Name = "btnExport";
-            this.btnExport.Size = new System.Drawing.Size(75, 23);
+            this.btnExport.Size = new System.Drawing.Size(75, 28);
             this.btnExport.TabIndex = 4;
             this.btnExport.Text = Properties.Strings.Button_Export;
             this.btnExport.UseVisualStyleBackColor = true;
@@ -101,9 +103,9 @@
             // btnImport
             //
             this.btnImport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnImport.Location = new System.Drawing.Point(296, 128);
+            this.btnImport.Location = new System.Drawing.Point(296, 148);
             this.btnImport.Name = "btnImport";
-            this.btnImport.Size = new System.Drawing.Size(75, 23);
+            this.btnImport.Size = new System.Drawing.Size(75, 28);
             this.btnImport.TabIndex = 5;
             this.btnImport.Text = Properties.Strings.Button_Import;
             this.btnImport.UseVisualStyleBackColor = true;
@@ -122,6 +124,7 @@
             this.Controls.Add(this.tvItems);
             this.MinimumSize = new System.Drawing.Size(400, 450);
             this.Name = "FrmManageItemsForm";
+            this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = Properties.Strings.Form_ManageItems_Title;
             this.Controls.SetChildIndex(this.tvItems, 0);

@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
+            this.pnlFooterLine = new System.Windows.Forms.Panel();
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnAccept = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
@@ -36,7 +37,8 @@
             // 
             // panel1
             // 
-            this.panel1.BackColor = System.Drawing.Color.LightSkyBlue;
+            this.panel1.BackColor = System.Drawing.SystemColors.Control;
+            this.panel1.Controls.Add(this.pnlFooterLine);
             this.panel1.Controls.Add(this.btnCancel);
             this.panel1.Controls.Add(this.btnAccept);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -45,12 +47,22 @@
             this.panel1.Size = new System.Drawing.Size(358, 50);
             this.panel1.TabIndex = 0;
             // 
+            // pnlFooterLine
+            //
+            this.pnlFooterLine.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.pnlFooterLine.Dock = System.Windows.Forms.DockStyle.Top;
+            this.pnlFooterLine.Location = new System.Drawing.Point(0, 0);
+            this.pnlFooterLine.Name = "pnlFooterLine";
+            this.pnlFooterLine.Size = new System.Drawing.Size(358, 1);
+            this.pnlFooterLine.TabIndex = 2;
+            //
             // btnCancel
-            // 
+            //
+            this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(12, 13);
+            this.btnCancel.Location = new System.Drawing.Point(266, 11);
             this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(75, 23);
+            this.btnCancel.Size = new System.Drawing.Size(80, 28);
             this.btnCancel.TabIndex = 1;
             this.btnCancel.Text = Properties.Strings.Dialog_Cancel;
             this.btnCancel.UseVisualStyleBackColor = true;
@@ -59,9 +71,9 @@
             // btnAccept
             // 
             this.btnAccept.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnAccept.Location = new System.Drawing.Point(271, 13);
+            this.btnAccept.Location = new System.Drawing.Point(180, 11);
             this.btnAccept.Name = "btnAccept";
-            this.btnAccept.Size = new System.Drawing.Size(75, 23);
+            this.btnAccept.Size = new System.Drawing.Size(80, 28);
             this.btnAccept.TabIndex = 0;
             this.btnAccept.Text = Properties.Strings.Dialog_OK;
             this.btnAccept.UseVisualStyleBackColor = true;
@@ -72,8 +84,10 @@
             this.AcceptButton = this.btnAccept;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.SystemColors.Window;
             this.CancelButton = this.btnCancel;
             this.ClientSize = new System.Drawing.Size(358, 236);
+            this.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.Controls.Add(this.panel1);
             this.Name = "FrmTemplateDialog";
             this.Text = "FrmTemplateDialog";
@@ -85,6 +99,7 @@
         #endregion
 
         private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Panel pnlFooterLine;
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Button btnAccept;
     }

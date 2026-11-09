@@ -52,6 +52,7 @@ namespace CustomTools
             this.Controls.Add(this.rtbLicense);
             this.MinimumSize = new System.Drawing.Size(360, 300);
             this.Name = "FrmLicense";
+            this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = Properties.Strings.License_Title;

@@ -82,9 +82,8 @@ namespace CTRegistryTree
             manageItem.Font = new Font(manageItem.Font.FontFamily, manageItem.Font.Size - 1, manageItem.Font.Style);
             items.Add(manageItem);
 
-            // Instead of a separate caption row, this whole plugin's section is marked with a shared
-            // Tag, which GroupLabelRenderer draws as a vertical label on the left, in the native image
-            // margin column (ContextMenuStrip.ShowImageMargin in Program.cs).
+            // This whole plugin's section is marked with a shared Tag, which the host's
+            // ModernMenu turns into a small caption above these items.
             foreach (var item in items)
             {
                 item.Tag = Name;

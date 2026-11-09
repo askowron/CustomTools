@@ -48,7 +48,7 @@ namespace CustomTools
             // lblNewVersion
             //
             this.lblNewVersion.AutoSize = true;
-            this.lblNewVersion.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold);
+            this.lblNewVersion.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.lblNewVersion.Location = new System.Drawing.Point(12, 35);
             this.lblNewVersion.Name = "lblNewVersion";
             this.lblNewVersion.Size = new System.Drawing.Size(75, 13);
@@ -70,7 +70,7 @@ namespace CustomTools
             //
             this.btnSkipVersion.Location = new System.Drawing.Point(12, 140);
             this.btnSkipVersion.Name = "btnSkipVersion";
-            this.btnSkipVersion.Size = new System.Drawing.Size(100, 23);
+            this.btnSkipVersion.Size = new System.Drawing.Size(100, 28);
             this.btnSkipVersion.TabIndex = 3;
             this.btnSkipVersion.Text = Properties.Strings.Update_BtnSkip;
             this.btnSkipVersion.UseVisualStyleBackColor = true;
@@ -80,7 +80,7 @@ namespace CustomTools
             //
             this.btnRemindLater.Location = new System.Drawing.Point(118, 140);
             this.btnRemindLater.Name = "btnRemindLater";
-            this.btnRemindLater.Size = new System.Drawing.Size(100, 23);
+            this.btnRemindLater.Size = new System.Drawing.Size(100, 28);
             this.btnRemindLater.TabIndex = 4;
             this.btnRemindLater.Text = Properties.Strings.Update_BtnRemindLater;
             this.btnRemindLater.UseVisualStyleBackColor = true;
@@ -91,7 +91,7 @@ namespace CustomTools
             this.btnUpdateNow.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnUpdateNow.Location = new System.Drawing.Point(224, 140);
             this.btnUpdateNow.Name = "btnUpdateNow";
-            this.btnUpdateNow.Size = new System.Drawing.Size(100, 23);
+            this.btnUpdateNow.Size = new System.Drawing.Size(100, 28);
             this.btnUpdateNow.TabIndex = 5;
             this.btnUpdateNow.Text = Properties.Strings.Update_BtnUpdateNow;
             this.btnUpdateNow.UseVisualStyleBackColor = true;
@@ -102,7 +102,8 @@ namespace CustomTools
             this.AcceptButton = this.btnUpdateNow;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(336, 175);
+            this.BackColor = System.Drawing.SystemColors.Window;
+            this.ClientSize = new System.Drawing.Size(336, 180);
             this.Controls.Add(this.btnUpdateNow);
             this.Controls.Add(this.btnRemindLater);
             this.Controls.Add(this.btnSkipVersion);

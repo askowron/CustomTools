@@ -13,6 +13,9 @@ namespace CustomTools
     {
         public FrmUpdateAvailable()
         {
+            // Before InitializeComponent, as forms deriving from FrmTemplateDialog get it: the
+            // layout only scales from the designer's AutoScaleDimensions to a font already in place.
+            Font = new System.Drawing.Font("Segoe UI", 9F);
             InitializeComponent();
 
             lblCurrentVersion.Text = string.Format(Strings.Update_CurrentVersion, CurrentVersion);

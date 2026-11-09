@@ -12,9 +12,13 @@ namespace CTRegistryTree
 {
     public partial class FrmManageItemsForm : FrmTemplateDialog
     {
+        private const int TreeRowExtraHeight = 8;
+
         public FrmManageItemsForm()
         {
             InitializeComponent();
+            NativeTheme.UseExplorerStyle(tvItems);
+            tvItems.ItemHeight = tvItems.Font.Height + TreeRowExtraHeight;
             InitializeIcons();
             RefreshTree(null);
         }
@@ -22,7 +26,7 @@ namespace CTRegistryTree
         private void InitializeIcons()
         {
             ImageList imageList = new ImageList();
-            imageList.ImageSize = new Size(16, 16);
+            imageList.ImageSize = SystemInformation.SmallIconSize;
             imageList.ColorDepth = ColorDepth.Depth32Bit;
             foreach (RegistryTreeItem.ActionType action in Enum.GetValues(typeof(RegistryTreeItem.ActionType)))
             {

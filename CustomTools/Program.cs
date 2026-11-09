@@ -37,24 +37,16 @@ namespace CustomTools
 
             // Create the tray icon
             NotifyIcon trayIcon = new NotifyIcon();
-            trayIcon.Icon = new System.Drawing.Icon(new MemoryStream(Resources.favicon));
+            trayIcon.Icon = new System.Drawing.Icon(new MemoryStream(Resources.favicon), SystemInformation.SmallIconSize);
             trayIcon.Visible = true;
-            trayIcon.Text = "Custom Tools v0.8";
+            trayIcon.Text = "Custom Tools v0.9";
             trayIcon.BalloonTipClicked += (s, e) => new FrmUpdateAvailable().Show();
 
             // Find plugins once, but rebuild the menu contents on every open, so changes
             // plugins persist (e.g. in the registry) show up immediately.
             List<ICTPlugin> plugins = CTPlugins.CTPlugins.FindPlugins();
             ContextMenuStrip menu = new ContextMenuStrip();
-            // ShowImageMargin=true reserves WinForms' native left image-margin column across
-            // the whole menu, which GroupLabelRenderer paints over for grouped items and
-            // leaves blank otherwise (no plugin sets ToolStripItem.Image). This column is the
-            // only reservation mechanism ToolStripDropDownMenu doesn't undo on its own: it
-            // recalculates and overwrites ContextMenuStrip.Padding on every layout pass, and it
-            // shrinks each auto-sized item's own width by ToolStripItem.Margin — both were tried
-            // and both get silently fought by the framework.
-            menu.ShowImageMargin = true;
-            menu.Renderer = new GroupLabelRenderer();
+            ModernMenu.Install(menu);
             menu.Opening += (s, e) => RebuildMenu(menu, plugins, trayIcon);
             RebuildMenu(menu, plugins, trayIcon);
 
@@ -100,6 +92,7 @@ namespace CustomTools
             });
             menu.Items.Add(new ToolStripSeparator());
             menu.Items.Add(Strings.TrayMenu_Exit, null, (s, e) => Application.Exit());
+            ModernMenu.Refresh(menu);
         }
     }
 }

@@ -94,14 +94,14 @@
             this.tbCommand.AcceptsReturn = false;
             this.tbCommand.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.tbCommand.Name = "tbCommand";
-            this.tbCommand.Size = new System.Drawing.Size(354, 64);
+            this.tbCommand.Size = new System.Drawing.Size(354, 56);
             this.tbCommand.TabIndex = 7;
             //
             // button1
             //
             this.button1.Location = new System.Drawing.Point(94, 130);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.Size = new System.Drawing.Size(75, 28);
             this.button1.TabIndex = 8;
             this.button1.Text = Properties.Strings.Button_Find;
             this.button1.UseVisualStyleBackColor = true;
@@ -111,7 +111,7 @@
             //
             this.btnTest.Location = new System.Drawing.Point(175, 130);
             this.btnTest.Name = "btnTest";
-            this.btnTest.Size = new System.Drawing.Size(75, 23);
+            this.btnTest.Size = new System.Drawing.Size(75, 28);
             this.btnTest.TabIndex = 9;
             this.btnTest.Text = Properties.Strings.Button_Test;
             this.btnTest.UseVisualStyleBackColor = true;
@@ -121,7 +121,7 @@
             //
             this.gbScope.Controls.Add(this.rbLocalMachine);
             this.gbScope.Controls.Add(this.rbCurrentUser);
-            this.gbScope.Location = new System.Drawing.Point(12, 163);
+            this.gbScope.Location = new System.Drawing.Point(12, 168);
             this.gbScope.Name = "gbScope";
             this.gbScope.Size = new System.Drawing.Size(436, 48);
             this.gbScope.TabIndex = 10;
@@ -152,7 +152,7 @@
             //
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(464, 270);
+            this.ClientSize = new System.Drawing.Size(464, 276);
             this.Controls.Add(this.gbScope);
             this.Controls.Add(this.btnTest);
             this.Controls.Add(this.button1);

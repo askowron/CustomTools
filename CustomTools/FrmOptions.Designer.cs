@@ -78,7 +78,7 @@ namespace CustomTools
             //
             this.btnCheckNow.Location = new System.Drawing.Point(12, 125);
             this.btnCheckNow.Name = "btnCheckNow";
-            this.btnCheckNow.Size = new System.Drawing.Size(100, 23);
+            this.btnCheckNow.Size = new System.Drawing.Size(100, 28);
             this.btnCheckNow.TabIndex = 4;
             this.btnCheckNow.Text = Properties.Strings.Options_CheckNow;
             this.btnCheckNow.UseVisualStyleBackColor = true;
@@ -87,7 +87,7 @@ namespace CustomTools
             // lblCheckNowStatus
             //
             this.lblCheckNowStatus.AutoSize = false;
-            this.lblCheckNowStatus.Location = new System.Drawing.Point(12, 152);
+            this.lblCheckNowStatus.Location = new System.Drawing.Point(12, 157);
             this.lblCheckNowStatus.Name = "lblCheckNowStatus";
             this.lblCheckNowStatus.Size = new System.Drawing.Size(256, 32);
             this.lblCheckNowStatus.TabIndex = 5;
@@ -96,7 +96,7 @@ namespace CustomTools
             //
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(280, 238);
+            this.ClientSize = new System.Drawing.Size(280, 244);
             this.Controls.Add(this.lblCheckNowStatus);
             this.Controls.Add(this.btnCheckNow);
             this.Controls.Add(this.chkCheckForUpdates);

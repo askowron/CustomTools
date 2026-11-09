@@ -97,11 +97,10 @@ changes without restarting the app. Two consequences for your plugin:
 ## 3. Menu item grouping (optional, but recommended)
 
 If your plugin contributes more than a couple of items, stamp a shared
-`Tag` on every `ToolStripItem` you return — the host installs a
-`GroupLabelRenderer` (`CTPlugins/GroupLabelRenderer.cs`) on the tray's
-`ContextMenuStrip` that turns a contiguous run of items sharing the same
-non-null string `Tag` into a labeled section, with a small rotated caption
-drawn in the menu's left margin. `CTRegistryTree` does this with its own
+`Tag` on every `ToolStripItem` you return — the host's `ModernMenu`
+(`CTPlugins/ModernMenu.cs`) turns a contiguous run of items sharing the same
+non-null string `Tag` into a labeled section, with a small caption above
+the items. `CTRegistryTree` does this with its own
 `Name`:
 
 ```csharp
@@ -176,7 +175,7 @@ user's chosen language with no extra work on your part.
 - [ ] A class implementing `ICTPlugin`, tagged `[CustomToolsPlugin(name, version)]`.
 - [ ] Debug `OutputPath` set to `..\CustomTools\bin\Debug\Plugins\`.
 - [ ] `GetMenuItems()` rebuilds fresh from your data source and runs fast.
-- [ ] (Optional) shared `Tag` on your items for `GroupLabelRenderer` grouping.
+- [ ] (Optional) shared `Tag` on your items for a section caption in the menu.
 - [ ] (Optional) dialogs derive from `FrmTemplateDialog`.
 - [ ] Strings localized via `Properties/Strings*.resx`, `Strings.Designer.cs` hand-updated.
 - [ ] Added to `CustomTools.slnx`.
