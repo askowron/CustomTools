@@ -28,6 +28,7 @@ namespace CustomTools
         /// </summary>
         private void InitializeComponent()
         {
+            this.picAppIcon = new System.Windows.Forms.PictureBox();
             this.lblProductName = new System.Windows.Forms.Label();
             this.lblVersion = new System.Windows.Forms.Label();
             this.lblAuthorCaption = new System.Windows.Forms.Label();
@@ -37,11 +38,19 @@ namespace CustomTools
             this.llSupport = new System.Windows.Forms.LinkLabel();
             this.SuspendLayout();
             //
+            // picAppIcon
+            //
+            this.picAppIcon.Location = new System.Drawing.Point(16, 16);
+            this.picAppIcon.Name = "picAppIcon";
+            this.picAppIcon.Size = new System.Drawing.Size(42, 42);
+            this.picAppIcon.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.picAppIcon.TabStop = false;
+            //
             // lblProductName
             //
             this.lblProductName.AutoSize = true;
-            this.lblProductName.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
-            this.lblProductName.Location = new System.Drawing.Point(12, 20);
+            this.lblProductName.Font = new System.Drawing.Font("Segoe UI Semibold", 15F);
+            this.lblProductName.Location = new System.Drawing.Point(66, 14);
             this.lblProductName.Name = "lblProductName";
             this.lblProductName.Size = new System.Drawing.Size(120, 21);
             this.lblProductName.TabIndex = 0;
@@ -50,7 +59,7 @@ namespace CustomTools
             // lblVersion
             //
             this.lblVersion.AutoSize = true;
-            this.lblVersion.Location = new System.Drawing.Point(12, 52);
+            this.lblVersion.Location = new System.Drawing.Point(68, 42);
             this.lblVersion.Name = "lblVersion";
             this.lblVersion.Size = new System.Drawing.Size(60, 13);
             this.lblVersion.TabIndex = 1;
@@ -59,7 +68,7 @@ namespace CustomTools
             // lblAuthorCaption
             //
             this.lblAuthorCaption.AutoSize = true;
-            this.lblAuthorCaption.Location = new System.Drawing.Point(12, 82);
+            this.lblAuthorCaption.Location = new System.Drawing.Point(16, 80);
             this.lblAuthorCaption.Name = "lblAuthorCaption";
             this.lblAuthorCaption.Size = new System.Drawing.Size(41, 13);
             this.lblAuthorCaption.TabIndex = 2;
@@ -68,7 +77,7 @@ namespace CustomTools
             // llAuthor
             //
             this.llAuthor.AutoSize = true;
-            this.llAuthor.Location = new System.Drawing.Point(90, 82);
+            this.llAuthor.Location = new System.Drawing.Point(90, 80);
             this.llAuthor.Name = "llAuthor";
             this.llAuthor.Size = new System.Drawing.Size(90, 13);
             this.llAuthor.TabIndex = 3;
@@ -79,7 +88,7 @@ namespace CustomTools
             // lblLicenseCaption
             //
             this.lblLicenseCaption.AutoSize = true;
-            this.lblLicenseCaption.Location = new System.Drawing.Point(12, 104);
+            this.lblLicenseCaption.Location = new System.Drawing.Point(16, 102);
             this.lblLicenseCaption.Name = "lblLicenseCaption";
             this.lblLicenseCaption.Size = new System.Drawing.Size(46, 13);
             this.lblLicenseCaption.TabIndex = 4;
@@ -88,7 +97,7 @@ namespace CustomTools
             // llLicense
             //
             this.llLicense.AutoSize = true;
-            this.llLicense.Location = new System.Drawing.Point(90, 104);
+            this.llLicense.Location = new System.Drawing.Point(90, 102);
             this.llLicense.Name = "llLicense";
             this.llLicense.Size = new System.Drawing.Size(60, 13);
             this.llLicense.TabIndex = 5;
@@ -99,7 +108,7 @@ namespace CustomTools
             // llSupport
             //
             this.llSupport.AutoSize = true;
-            this.llSupport.Location = new System.Drawing.Point(12, 132);
+            this.llSupport.Location = new System.Drawing.Point(16, 128);
             this.llSupport.Name = "llSupport";
             this.llSupport.Size = new System.Drawing.Size(110, 13);
             this.llSupport.TabIndex = 6;
@@ -112,6 +121,7 @@ namespace CustomTools
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(300, 210);
+            this.Controls.Add(this.picAppIcon);
             this.Controls.Add(this.llSupport);
             this.Controls.Add(this.llLicense);
             this.Controls.Add(this.lblLicenseCaption);
@@ -140,6 +150,7 @@ namespace CustomTools
 
         #endregion
 
+        private System.Windows.Forms.PictureBox picAppIcon;
         private System.Windows.Forms.Label lblProductName;
         private System.Windows.Forms.Label lblVersion;
         private System.Windows.Forms.Label lblAuthorCaption;

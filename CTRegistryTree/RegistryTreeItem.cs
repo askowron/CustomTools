@@ -165,7 +165,7 @@ namespace CTRegistryTree
             TreeNode node = new TreeNode(text);
             node.Tag = item;
             if (isLocalMachine)
-                node.ForeColor = Color.FromArgb(100, 100, 100);
+                node.ForeColor = CTPlugins.ThemePalette.Current.MutedText;
 
             node.ImageKey = item.Action.ToString();
             node.SelectedImageKey = item.Action.ToString();

@@ -2,6 +2,8 @@ using CTPlugins;
 using CustomTools.Properties;
 using System;
 using System.Diagnostics;
+using System.Drawing;
+using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
 
@@ -11,10 +13,19 @@ namespace CustomTools
     {
         private const string AuthorUrl = "https://github.com/askowron";
         private const string SupportUrl = "https://buycoffee.to/rico";
+        private const int AppIconSize = 48;
 
         public FrmAbout()
         {
             InitializeComponent();
+            UseSingleCloseButton();
+
+            picAppIcon.Image = new Icon(new MemoryStream(Resources.favicon), AppIconSize, AppIconSize).ToBitmap();
+
+            ThemePalette palette = ThemePalette.Current;
+            lblVersion.ForeColor = palette.MutedText;
+            lblAuthorCaption.ForeColor = palette.MutedText;
+            lblLicenseCaption.ForeColor = palette.MutedText;
 
             Assembly assembly = Assembly.GetExecutingAssembly();
 

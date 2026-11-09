@@ -82,13 +82,6 @@ namespace CTRegistryTree
             manageItem.Font = new Font(manageItem.Font.FontFamily, manageItem.Font.Size - 1, manageItem.Font.Style);
             items.Add(manageItem);
 
-            // This whole plugin's section is marked with a shared Tag, which the host's
-            // ModernMenu turns into a small caption above these items.
-            foreach (var item in items)
-            {
-                item.Tag = Name;
-            }
-
             return items.ToArray();
         }
 

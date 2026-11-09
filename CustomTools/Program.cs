@@ -39,7 +39,7 @@ namespace CustomTools
             NotifyIcon trayIcon = new NotifyIcon();
             trayIcon.Icon = new System.Drawing.Icon(new MemoryStream(Resources.favicon), SystemInformation.SmallIconSize);
             trayIcon.Visible = true;
-            trayIcon.Text = "Custom Tools v0.9";
+            trayIcon.Text = "Custom Tools v0.9.1";
             trayIcon.BalloonTipClicked += (s, e) => new FrmUpdateAvailable().Show();
 
             // Find plugins once, but rebuild the menu contents on every open, so changes
@@ -73,7 +73,16 @@ namespace CustomTools
             menu.Items.Clear();
             foreach (ICTPlugin plugin in plugins)
             {
-                menu.Items.AddRange(plugin.GetMenuItems());
+                ToolStripItem[] items = plugin.GetMenuItems();
+
+                // Every plugin is its own section; a Tag the plugin set itself still wins.
+                foreach (ToolStripItem item in items)
+                {
+                    if (item.Tag == null)
+                        item.Tag = plugin.Name;
+                }
+
+                menu.Items.AddRange(items);
             }
             menu.Items.Add(new ToolStripSeparator());
             menu.Items.Add(Strings.TrayMenu_Options, null, (s, e) =>

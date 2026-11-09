@@ -5,10 +5,12 @@ using System.Windows.Forms;
 namespace CTPlugins
 {
     /// <summary>
-    /// Flat ToolStrip renderer matching Windows 11 menus, in the light or dark app theme.
-    /// The left image-margin column stays reserved but blank: <c>ToolStripDropDownMenu</c>
-    /// recalculates and overwrites its own <c>Padding</c> on every layout pass and shrinks
-    /// auto-sized items by their <c>Margin</c>, so that column is the only text indent that survives.
+    /// Flat ToolStrip renderer matching Windows 11 menus, in the light or dark app theme. Each
+    /// contiguous run of items sharing a string Tag is one plugin's section, drawn as a card with
+    /// an accent bar. The left image-margin column stays reserved but blank:
+    /// <c>ToolStripDropDownMenu</c> recalculates and overwrites its own <c>Padding</c> on every
+    /// layout pass and shrinks auto-sized items by their <c>Margin</c>, so that column is the only
+    /// text indent that survives.
     /// </summary>
     public class ModernMenuRenderer : ToolStripProfessionalRenderer
     {
@@ -16,33 +18,19 @@ namespace CTPlugins
         private const int HoverInsetY = 1;
         private const int HoverRadius = 4;
         private const int SeparatorInset = 8;
+        private const int SectionInsetX = 4;
+        private const int SectionRadius = 6;
+        private const int SectionBarInsetX = 3;
+        private const int SectionBarInsetY = 6;
+        private const int SectionBarWidth = 3;
+        private const int SectionBarRadius = 1;
+        private const int SectionContentLeft = 11;
+        private const int SectionContentRight = 8;
         private const int ChevronFontDivisor = 5;
         private const int MinChevronHalfHeight = 3;
         private const float ChevronPenWidth = 1.2f;
 
-        private static readonly Palette Light = new Palette
-        {
-            Background = Color.FromArgb(249, 249, 249),
-            Hover = Color.FromArgb(236, 236, 236),
-            Text = Color.FromArgb(26, 26, 26),
-            DisabledText = Color.FromArgb(140, 140, 140),
-            CaptionText = Color.FromArgb(96, 96, 96),
-            Separator = Color.FromArgb(229, 229, 229),
-            Border = Color.FromArgb(214, 214, 214),
-        };
-
-        private static readonly Palette Dark = new Palette
-        {
-            Background = Color.FromArgb(44, 44, 44),
-            Hover = Color.FromArgb(61, 61, 61),
-            Text = Color.FromArgb(255, 255, 255),
-            DisabledText = Color.FromArgb(128, 128, 128),
-            CaptionText = Color.FromArgb(171, 171, 171),
-            Separator = Color.FromArgb(64, 64, 64),
-            Border = Color.FromArgb(80, 80, 80),
-        };
-
-        private Palette _palette;
+        private ThemePalette _palette;
 
         public ModernMenuRenderer()
         {
@@ -52,13 +40,56 @@ namespace CTPlugins
         /// <summary>Re-reads the system theme; call before each open so a change applies live.</summary>
         public void UpdateTheme()
         {
-            _palette = NativeTheme.AppsUseDarkTheme ? Dark : Light;
+            _palette = ThemePalette.Current;
         }
 
         protected override void OnRenderToolStripBackground(ToolStripRenderEventArgs e)
         {
-            using (var brush = new SolidBrush(_palette.Background))
+            using (var brush = new SolidBrush(_palette.MenuBackground))
                 e.Graphics.FillRectangle(brush, e.AffectedBounds);
+
+            ToolStripItem first = null;
+            ToolStripItem last = null;
+            string currentSection = null;
+
+            foreach (ToolStripItem item in e.ToolStrip.Items)
+            {
+                if (!item.Available)
+                    continue;
+
+                string section = SectionOf(item);
+                if (section != currentSection)
+                {
+                    DrawSection(e.Graphics, e.AffectedBounds.Width, first, last);
+                    currentSection = section;
+                    first = section == null ? null : item;
+                }
+                last = item;
+            }
+            DrawSection(e.Graphics, e.AffectedBounds.Width, first, last);
+        }
+
+        private void DrawSection(Graphics g, int stripWidth, ToolStripItem first, ToolStripItem last)
+        {
+            if (first == null)
+                return;
+
+            Rectangle card = new Rectangle(SectionInsetX, first.Bounds.Top, stripWidth - SectionInsetX * 2, last.Bounds.Bottom - first.Bounds.Top);
+            Rectangle bar = new Rectangle(card.Left + SectionBarInsetX, card.Top + SectionBarInsetY, SectionBarWidth, card.Height - SectionBarInsetY * 2);
+
+            SmoothingMode previous = g.SmoothingMode;
+            g.SmoothingMode = SmoothingMode.AntiAlias;
+            using (GraphicsPath path = MenuGeometry.RoundedRectangle(card, SectionRadius))
+            using (var brush = new SolidBrush(_palette.MenuSection))
+            {
+                g.FillPath(brush, path);
+            }
+            using (GraphicsPath path = MenuGeometry.RoundedRectangle(bar, SectionBarRadius))
+            using (var brush = new SolidBrush(_palette.AccentText))
+            {
+                g.FillPath(brush, path);
+            }
+            g.SmoothingMode = previous;
         }
 
         protected override void OnRenderToolStripBorder(ToolStripRenderEventArgs e)
@@ -67,30 +98,30 @@ namespace CTPlugins
             if (NativeTheme.SupportsRoundedCorners)
                 return;
 
-            using (var pen = new Pen(_palette.Border))
+            using (var pen = new Pen(_palette.MenuBorder))
                 e.Graphics.DrawRectangle(pen, 0, 0, e.ToolStrip.Width - 1, e.ToolStrip.Height - 1);
         }
 
         protected override void OnRenderImageMargin(ToolStripRenderEventArgs e)
         {
-            // Deliberately empty: skips the base gradient so the column matches the background.
+            // Deliberately empty: skips the base gradient so the column shows the card behind it.
         }
 
         protected override void OnRenderMenuItemBackground(ToolStripItemRenderEventArgs e)
         {
-            // e.Graphics is translated so (0,0) is this item's own top-left corner.
-            Rectangle row = new Rectangle(Point.Empty, e.Item.Size);
-            using (var brush = new SolidBrush(_palette.Background))
-                e.Graphics.FillRectangle(brush, row);
-
             if (!e.Item.Enabled || !(e.Item.Selected || e.Item.Pressed))
                 return;
 
-            Rectangle hover = Rectangle.Inflate(row, -HoverInsetX, -HoverInsetY);
+            // e.Graphics is translated so (0,0) is this item's own top-left corner.
+            bool inSection = SectionOf(e.Item) != null;
+            int left = inSection ? SectionContentLeft : HoverInsetX;
+            int right = inSection ? SectionContentRight : HoverInsetX;
+            Rectangle hover = Rectangle.FromLTRB(left, HoverInsetY, e.Item.Width - right, e.Item.Height - HoverInsetY);
+
             SmoothingMode previous = e.Graphics.SmoothingMode;
             e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-            using (GraphicsPath path = RoundedRectangle(hover, HoverRadius))
-            using (var brush = new SolidBrush(_palette.Hover))
+            using (GraphicsPath path = MenuGeometry.RoundedRectangle(hover, HoverRadius))
+            using (var brush = new SolidBrush(inSection ? _palette.MenuSectionHover : _palette.MenuHover))
             {
                 e.Graphics.FillPath(brush, path);
             }
@@ -99,7 +130,7 @@ namespace CTPlugins
 
         protected override void OnRenderItemText(ToolStripItemTextRenderEventArgs e)
         {
-            Color color = e.Item is MenuSectionHeader ? _palette.CaptionText
+            Color color = e.Item is MenuSectionHeader ? _palette.AccentText
                 : e.Item.Enabled ? _palette.Text
                 : _palette.DisabledText;
             TextRenderer.DrawText(e.Graphics, e.Text, e.TextFont, e.TextRectangle, color, e.TextFormat);
@@ -107,9 +138,12 @@ namespace CTPlugins
 
         protected override void OnRenderSeparator(ToolStripSeparatorRenderEventArgs e)
         {
+            bool inSection = SectionOf(e.Item) != null;
+            int left = inSection ? SectionContentLeft : SeparatorInset;
             int y = e.Item.Height / 2;
-            using (var pen = new Pen(_palette.Separator))
-                e.Graphics.DrawLine(pen, SeparatorInset, y, e.Item.Width - SeparatorInset, y);
+            Color color = inSection ? _palette.MenuSectionHover : _palette.MenuSeparator;
+            using (var pen = new Pen(color))
+                e.Graphics.DrawLine(pen, left, y, e.Item.Width - SeparatorInset, y);
         }
 
         protected override void OnRenderArrow(ToolStripArrowRenderEventArgs e)
@@ -135,27 +169,10 @@ namespace CTPlugins
             e.Graphics.SmoothingMode = previous;
         }
 
-        private static GraphicsPath RoundedRectangle(Rectangle bounds, int radius)
+        private static string SectionOf(ToolStripItem item)
         {
-            int diameter = radius * 2;
-            var path = new GraphicsPath();
-            path.AddArc(bounds.Left, bounds.Top, diameter, diameter, 180, 90);
-            path.AddArc(bounds.Right - diameter, bounds.Top, diameter, diameter, 270, 90);
-            path.AddArc(bounds.Right - diameter, bounds.Bottom - diameter, diameter, diameter, 0, 90);
-            path.AddArc(bounds.Left, bounds.Bottom - diameter, diameter, diameter, 90, 90);
-            path.CloseFigure();
-            return path;
-        }
-
-        private sealed class Palette
-        {
-            public Color Background;
-            public Color Hover;
-            public Color Text;
-            public Color DisabledText;
-            public Color CaptionText;
-            public Color Separator;
-            public Color Border;
+            string section = item.Tag as string;
+            return string.IsNullOrEmpty(section) ? null : section;
         }
     }
 }

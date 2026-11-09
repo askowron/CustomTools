@@ -41,15 +41,26 @@ namespace CTPlugins
             return _rowSpacer;
         }
 
-        /// <summary>Adds a caption above each contiguous run of items sharing a string Tag.</summary>
+        /// <summary>
+        /// Adds a caption above each contiguous run of items sharing a string Tag, and a
+        /// separator between two neighboring sections so their cards don't touch.
+        /// </summary>
         private static void InsertSectionHeaders(ToolStripItemCollection items)
         {
             string currentSection = null;
             for (int i = 0; i < items.Count; i++)
             {
                 string section = items[i].Tag as string;
-                if (!string.IsNullOrEmpty(section) && section != currentSection)
+                if (string.IsNullOrEmpty(section))
+                    section = null;
+
+                if (section != null && section != currentSection)
                 {
+                    if (currentSection != null)
+                    {
+                        items.Insert(i, new ToolStripSeparator());
+                        i++;
+                    }
                     items.Insert(i, new MenuSectionHeader(section));
                     i++;
                 }

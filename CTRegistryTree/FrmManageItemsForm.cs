@@ -17,7 +17,6 @@ namespace CTRegistryTree
         public FrmManageItemsForm()
         {
             InitializeComponent();
-            NativeTheme.UseExplorerStyle(tvItems);
             tvItems.ItemHeight = tvItems.Font.Height + TreeRowExtraHeight;
             InitializeIcons();
             RefreshTree(null);

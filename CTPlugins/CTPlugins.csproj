@@ -47,7 +47,10 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="CustomToolsPluginAttribute.cs" />
+    <Compile Include="DialogTheme.cs" />
+    <Compile Include="MenuGeometry.cs" />
     <Compile Include="MenuSectionHeader.cs" />
+    <Compile Include="ThemePalette.cs" />
     <Compile Include="ModernMenu.cs" />
     <Compile Include="ModernMenuRenderer.cs" />
     <Compile Include="NativeTheme.cs" />

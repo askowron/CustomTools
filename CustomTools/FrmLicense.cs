@@ -14,6 +14,7 @@ namespace CustomTools
         {
             InitializeComponent();
 
+            UseSingleCloseButton();
             rtbLicense.Rtf = Resources.LicenseRtf;
 
             Shown += FrmLicense_Shown;
@@ -25,6 +26,7 @@ namespace CustomTools
             if (latestLicenseText != null && !IsDisposed)
             {
                 rtbLicense.Text = latestLicenseText;
+                DialogTheme.StyleRichText(rtbLicense, ThemePalette.Current);
             }
         }
 
