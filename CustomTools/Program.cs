@@ -20,6 +20,8 @@ namespace CustomTools
         // Manager shuts us down for a patch (i.e. the Inno Setup self-update).
         private const int RestartOnlyForPatch = 1 | 2 | 8;
 
+        private static readonly TimeSpan JustClosedWindow = TimeSpan.FromMilliseconds(300);
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -39,7 +41,7 @@ namespace CustomTools
             NotifyIcon trayIcon = new NotifyIcon();
             trayIcon.Icon = new System.Drawing.Icon(new MemoryStream(Resources.favicon), SystemInformation.SmallIconSize);
             trayIcon.Visible = true;
-            trayIcon.Text = "Custom Tools v0.9.1";
+            trayIcon.Text = "Custom Tools v0.9.2";
             trayIcon.BalloonTipClicked += (s, e) => new FrmUpdateAvailable().Show();
 
             // Find plugins once, but rebuild the menu contents on every open, so changes
@@ -47,25 +49,56 @@ namespace CustomTools
             List<ICTPlugin> plugins = CTPlugins.CTPlugins.FindPlugins();
             ContextMenuStrip menu = new ContextMenuStrip();
             ModernMenu.Install(menu);
-            menu.Opening += (s, e) => RebuildMenu(menu, plugins, trayIcon);
             RebuildMenu(menu, plugins, trayIcon);
 
             // Attach the menu to the icon
             trayIcon.ContextMenuStrip = menu;
-
-            // We can also react to a left-click
-            trayIcon.MouseClick += (s, e) =>
-            {
-                if (e.Button == MouseButtons.Left)
-                {
-                    menu.Show(Cursor.Position); // shows the menu at the cursor
-                }
-            };
+            ConnectTrayClicks(trayIcon, menu, plugins);
 
             UpdateChecker.StartBackgroundChecking(trayIcon);
 
             // Run the application loop with no window
             Application.Run();
+        }
+
+        /// <summary>
+        /// Opens the menu on a click and closes it on the next one. Pressing the mouse on the
+        /// taskbar can dismiss the menu before the click arrives, when it would look closed and
+        /// reopen, so whether it was open is decided at the press. NotifyIcon shows the menu by
+        /// itself on a right-click, before raising MouseClick, so that path is stopped in Opening.
+        /// </summary>
+        private static void ConnectTrayClicks(NotifyIcon trayIcon, ContextMenuStrip menu, List<ICTPlugin> plugins)
+        {
+            bool openAtPress = false;
+            DateTime closedAt = DateTime.MinValue;
+
+            menu.Closed += (s, e) => closedAt = DateTime.UtcNow;
+
+            menu.Opening += (s, e) =>
+            {
+                if (openAtPress)
+                    e.Cancel = true;
+                else
+                    RebuildMenu(menu, plugins, trayIcon);
+            };
+
+            trayIcon.MouseDown += (s, e) =>
+            {
+                openAtPress = menu.Visible || DateTime.UtcNow - closedAt < JustClosedWindow;
+            };
+
+            trayIcon.MouseClick += (s, e) =>
+            {
+                if (openAtPress)
+                {
+                    openAtPress = false;
+                    menu.Close();
+                }
+                else if (e.Button == MouseButtons.Left)
+                {
+                    menu.Show(Cursor.Position);
+                }
+            };
         }
 
         private static void RebuildMenu(ContextMenuStrip menu, List<ICTPlugin> plugins, NotifyIcon trayIcon)
