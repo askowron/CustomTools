@@ -15,7 +15,7 @@
 #endif
 
 #define MyAppName "CustomTools"
-#define MyAppPublisher "Adam Skowronski"
+#define MyAppPublisher "APPIT"
 #define MyAppURL "https://github.com/askowron/CustomTools"
 #define MyAppExeName "CustomTools.exe"
 

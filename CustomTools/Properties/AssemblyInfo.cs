@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("CustomTools")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("APPIT")]
 [assembly: AssemblyProduct("CustomTools")]
 [assembly: AssemblyCopyright("Copyright ©  2026")]
 [assembly: AssemblyTrademark("")]
@@ -32,4 +32,4 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersion("26.9.3.1")]
 [assembly: AssemblyFileVersion("26.9.3.1")]
 
-[assembly: AssemblyInformationalVersion("0.9.2")]
+[assembly: AssemblyInformationalVersion("0.9.3")]
